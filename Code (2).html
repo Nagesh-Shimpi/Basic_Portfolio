@@ -1,0 +1,330 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="UTF-8">
+<title>Ultimate DSA Visualizer</title>
+
+<script src="https://d3js.org/d3.v7.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/html2canvas@1.4.1/dist/html2canvas.min.js"></script>
+
+<style>
+body {
+    font-family: Arial;
+    background: #0f0f0f;
+    color: white;
+    text-align: center;
+}
+
+h1 {
+    margin-top: 20px;
+}
+
+.controls {
+    margin: 20px;
+}
+
+input, button, select {
+    padding: 8px;
+    margin: 5px;
+    border-radius: 5px;
+    border: none;
+}
+
+button {
+    background: #00c896;
+    cursor: pointer;
+    font-weight: bold;
+}
+
+button:hover { opacity: 0.8; }
+
+#visualizer {
+    margin-top: 30px;
+    min-height: 200px;
+}
+
+.box {
+    display: inline-block;
+    width: 45px;
+    height: 45px;
+    line-height: 45px;
+    margin: 4px;
+    background: #1f1f1f;
+    border-radius: 5px;
+    transition: 0.3s;
+}
+
+.prime { background: #00c896 !important; }
+.composite { background: #ff4d4d !important; }
+.active { background: #f1c40f !important; }
+
+svg {
+    background: #1a1a1a;
+    margin-top: 20px;
+}
+
+.notification {
+    padding: 10px;
+    margin: 10px auto;
+    width: 300px;
+    border-radius: 6px;
+}
+.info { background: #3498db; }
+.success { background: #2ecc71; }
+.error { background: #e74c3c; }
+</style>
+</head>
+<body>
+
+<h1>🚀 Ultimate DSA Visualizer</h1>
+
+<div class="controls">
+    <input type="text" id="arrayInput" placeholder="Enter numbers (e.g. 5,3,8,1)">
+    <button onclick="generateArray()">Generate</button>
+
+    <select id="algoSelect">
+        <option value="sieve">Sieve</option>
+        <option value="bubble">Bubble Sort</option>
+        <option value="selection">Selection Sort</option>
+    </select>
+
+    <button onclick="runAlgorithm()">Run</button>
+
+    Speed:
+    <input type="range" id="speed" min="100" max="1000" value="400">
+
+    <button onclick="drawGraph()">Draw Graph</button>
+    <button onclick="runBFS()">BFS</button>
+    <button onclick="runDFS()">DFS</button>
+
+    <button onclick="exportImage()">Export PNG</button>
+</div>
+
+<div id="visualizer"></div>
+<div id="graph"></div>
+<div id="notification-container"></div>
+
+<script>
+let currentArray = [];
+let delay = () => new Promise(res => setTimeout(res, document.getElementById("speed").value));
+
+function showNotification(message, type="info", duration=3000) {
+    const container = document.getElementById("notification-container");
+    const notif = document.createElement("div");
+    notif.className = "notification " + type;
+    notif.innerText = message;
+    container.appendChild(notif);
+    setTimeout(()=>notif.remove(), duration);
+}
+
+function generateArray() {
+    const input = document.getElementById("arrayInput").value;
+    const nums = input.split(",").map(n=>parseInt(n.trim()));
+    if(nums.some(isNaN)) return showNotification("Invalid input","error");
+    currentArray = nums;
+    renderArray();
+}
+
+function renderArray() {
+    const container = document.getElementById("visualizer");
+    container.innerHTML = "";
+    currentArray.forEach(n=>{
+        const box = document.createElement("div");
+        box.className="box";
+        box.innerText=n;
+        container.appendChild(box);
+    });
+}
+
+async function runAlgorithm() {
+    const algo = document.getElementById("algoSelect").value;
+    if(algo==="sieve") await runSieve();
+    if(algo==="bubble") await bubbleSort();
+    if(algo==="selection") await selectionSort();
+}
+
+async function runSieve() {
+    const max = Math.max(...currentArray);
+    let sieve = new Array(max+1).fill(true);
+    sieve[0]=sieve[1]=false;
+
+    const boxes=document.querySelectorAll(".box");
+
+    for(let i=2;i*i<=max;i++){
+        if(sieve[i]){
+            for(let j=i*i;j<=max;j+=i){
+                sieve[j]=false;
+                boxes.forEach(b=>{
+                    if(parseInt(b.innerText)===j){
+                        b.classList.add("composite");
+                    }
+                });
+                await delay();
+            }
+        }
+    }
+
+    boxes.forEach(b=>{
+        if(sieve[parseInt(b.innerText)])
+            b.classList.add("prime");
+    });
+
+    showNotification("Sieve Completed","success");
+}
+
+async function bubbleSort(){
+    let arr=currentArray;
+    let boxes=document.querySelectorAll(".box");
+
+    for(let i=0;i<arr.length;i++){
+        for(let j=0;j<arr.length-i-1;j++){
+            boxes[j].classList.add("active");
+            boxes[j+1].classList.add("active");
+            await delay();
+            if(arr[j]>arr[j+1]){
+                [arr[j],arr[j+1]]=[arr[j+1],arr[j]];
+                renderArray();
+                boxes=document.querySelectorAll(".box");
+            }
+            boxes[j].classList.remove("active");
+            boxes[j+1].classList.remove("active");
+        }
+    }
+    showNotification("Bubble Sort Completed","success");
+}
+
+async function selectionSort(){
+    let arr=currentArray;
+    let boxes=document.querySelectorAll(".box");
+
+    for(let i=0;i<arr.length;i++){
+        let min=i;
+        for(let j=i+1;j<arr.length;j++){
+            boxes[j].classList.add("active");
+            await delay();
+            if(arr[j]<arr[min]) min=j;
+            boxes[j].classList.remove("active");
+        }
+        [arr[i],arr[min]]=[arr[min],arr[i]];
+        renderArray();
+        boxes=document.querySelectorAll(".box");
+    }
+    showNotification("Selection Sort Completed","success");
+}
+
+/* Graph Section */
+
+let graphData = {
+    nodes:[{id:0},{id:1},{id:2},{id:3},{id:4}],
+    links:[
+        {source:0,target:1},
+        {source:0,target:2},
+        {source:1,target:3},
+        {source:2,target:4}
+    ]
+};
+
+function drawGraph(){
+    document.getElementById("graph").innerHTML="";
+    const width=400,height=300;
+    const svg=d3.select("#graph").append("svg")
+        .attr("width",width)
+        .attr("height",height);
+
+    const simulation=d3.forceSimulation(graphData.nodes)
+        .force("link",d3.forceLink(graphData.links).distance(80).id(d=>d.id))
+        .force("charge",d3.forceManyBody())
+        .force("center",d3.forceCenter(width/2,height/2));
+
+    const link=svg.append("g")
+        .selectAll("line")
+        .data(graphData.links)
+        .enter().append("line")
+        .attr("stroke","white");
+
+    const node=svg.append("g")
+        .selectAll("circle")
+        .data(graphData.nodes)
+        .enter().append("circle")
+        .attr("r",15)
+        .attr("fill","#00c896");
+
+    const text=svg.append("g")
+        .selectAll("text")
+        .data(graphData.nodes)
+        .enter().append("text")
+        .text(d=>d.id)
+        .attr("fill","black")
+        .attr("text-anchor","middle")
+        .attr("dy",".35em");
+
+    simulation.on("tick",()=>{
+        link.attr("x1",d=>d.source.x)
+            .attr("y1",d=>d.source.y)
+            .attr("x2",d=>d.target.x)
+            .attr("y2",d=>d.target.y);
+
+        node.attr("cx",d=>d.x)
+            .attr("cy",d=>d.y);
+
+        text.attr("x",d=>d.x)
+            .attr("y",d=>d.y);
+    });
+
+    showNotification("Graph Drawn","success");
+}
+
+async function runBFS(){
+    showNotification("BFS Traversal Started","info");
+    let visited=new Set();
+    let queue=[0];
+
+    while(queue.length){
+        let node=queue.shift();
+        if(!visited.has(node)){
+            visited.add(node);
+            highlightNode(node);
+            await delay();
+            graphData.links.forEach(l=>{
+                if(l.source.id===node) queue.push(l.target.id);
+            });
+        }
+    }
+}
+
+async function runDFS(){
+    showNotification("DFS Traversal Started","info");
+    let visited=new Set();
+
+    async function dfs(node){
+        if(visited.has(node)) return;
+        visited.add(node);
+        highlightNode(node);
+        await delay();
+        for(let l of graphData.links){
+            if(l.source.id===node)
+                await dfs(l.target.id);
+        }
+    }
+
+    await dfs(0);
+}
+
+function highlightNode(id){
+    d3.selectAll("circle")
+        .filter(d=>d.id===id)
+        .attr("fill","#ff4d4d");
+}
+
+function exportImage(){
+    html2canvas(document.body).then(canvas=>{
+        const link=document.createElement("a");
+        link.download="dsa_visualizer.png";
+        link.href=canvas.toDataURL();
+        link.click();
+    });
+}
+</script>
+
+</body>
+</html>

@@ -1,0 +1,528 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Linear Queue Visualizer (C Code)</title>
+    <style>
+        /* --- THEME VARIABLES --- */
+        :root {
+            --bg-color: #09090b;
+            --panel-bg: rgba(39, 39, 42, 0.4);
+            --border-color: rgba(255, 255, 255, 0.1);
+            --accent-color: #3b82f6; /* Blue */
+            --highlight-color: #eab308; /* Yellow/Gold */
+            --danger-color: #ef4444; /* Red */
+            --success-color: #22c55e; /* Green */
+            --text-main: #e4e4e7;
+            --text-muted: #a1a1aa;
+            --font-mono: 'Courier New', Courier, monospace;
+        }
+
+        * { box-sizing: border-box; margin: 0; padding: 0; }
+
+        body {
+            background-color: var(--bg-color);
+            color: var(--text-main);
+            font-family: 'Segoe UI', sans-serif;
+            height: 100vh;
+            display: flex;
+            flex-direction: column;
+            overflow: hidden;
+        }
+
+        /* --- LAYOUT --- */
+        header {
+            padding: 15px 30px;
+            border-bottom: 1px solid var(--border-color);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            background: rgba(0,0,0,0.5);
+            backdrop-filter: blur(5px);
+        }
+
+        h1 { font-size: 1.2rem; font-weight: 600; letter-spacing: 0.5px; }
+        .badge { background: var(--accent-color); color: white; padding: 2px 8px; border-radius: 4px; font-size: 0.75rem; margin-left: 10px; }
+
+        main {
+            flex: 1;
+            display: grid;
+            grid-template-columns: 300px 1fr 400px; /* Controls | Visual | Code */
+            gap: 20px;
+            padding: 20px;
+            height: calc(100vh - 60px);
+        }
+
+        /* --- GLASS PANELS --- */
+        .panel {
+            background: var(--panel-bg);
+            border: 1px solid var(--border-color);
+            border-radius: 12px;
+            display: flex;
+            flex-direction: column;
+            overflow: hidden;
+            box-shadow: 0 4px 20px rgba(0,0,0,0.4);
+        }
+
+        .panel-header {
+            padding: 12px 20px;
+            background: rgba(255,255,255,0.03);
+            border-bottom: 1px solid var(--border-color);
+            font-weight: 600;
+            color: var(--accent-color);
+            text-transform: uppercase;
+            font-size: 0.85rem;
+        }
+
+        /* --- CONTROLS (LEFT) --- */
+        .controls-body { padding: 20px; display: flex; flex-direction: column; gap: 15px; }
+        
+        input {
+            width: 100%; padding: 10px; background: #18181b; border: 1px solid var(--border-color);
+            color: white; border-radius: 6px; outline: none; transition: 0.3s;
+        }
+        input:focus { border-color: var(--accent-color); }
+
+        button {
+            padding: 12px; border: none; border-radius: 6px; font-weight: bold; cursor: pointer;
+            transition: all 0.2s; text-transform: uppercase; font-size: 0.9rem;
+        }
+
+        .btn-insert { background: var(--accent-color); color: white; }
+        .btn-insert:hover { background: #2563eb; }
+        
+        .btn-delete { background: var(--danger-color); color: white; }
+        .btn-delete:hover { background: #dc2626; }
+
+        .btn-reset { background: transparent; border: 1px solid var(--text-muted); color: var(--text-muted); margin-top: auto; }
+        .btn-reset:hover { border-color: white; color: white; }
+
+        .variable-monitor {
+            margin-top: 20px;
+            padding: 15px;
+            background: rgba(0,0,0,0.3);
+            border-radius: 8px;
+            font-family: var(--font-mono);
+            font-size: 0.9rem;
+        }
+        .var-row { display: flex; justify-content: space-between; margin-bottom: 5px; }
+        .val { color: var(--highlight-color); }
+
+        /* --- VISUALIZER (CENTER) --- */
+        .visualizer-body {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            position: relative;
+        }
+
+        .queue-container {
+            display: flex;
+            gap: 10px;
+            position: relative;
+            margin-bottom: 60px; /* Space for pointers */
+        }
+
+        .queue-box {
+            width: 80px;
+            height: 80px;
+            border: 2px solid var(--text-muted);
+            border-radius: 8px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.5rem;
+            font-weight: bold;
+            color: white;
+            position: relative;
+            transition: all 0.3s ease;
+        }
+
+        .queue-box.filled { border-color: var(--accent-color); background: rgba(59, 130, 246, 0.1); box-shadow: 0 0 15px rgba(59, 130, 246, 0.2); }
+        .queue-box.dequeued { opacity: 0.3; border-color: #333; color: #555; }
+
+        .index-label {
+            position: absolute; top: -25px; left: 50%; transform: translateX(-50%);
+            font-family: var(--font-mono); color: var(--text-muted); font-size: 0.8rem;
+        }
+
+        /* POINTERS */
+        .pointer-container {
+            position: absolute;
+            bottom: -50px;
+            left: 0;
+            width: 100%;
+            height: 40px;
+        }
+
+        .pointer {
+            position: absolute;
+            width: 80px; /* Matches box width */
+            text-align: center;
+            transition: left 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+            font-weight: bold;
+            font-size: 0.9rem;
+        }
+
+        .pointer-front { color: var(--danger-color); top: 0; }
+        .pointer-rear { color: var(--success-color); top: 20px; }
+        
+        .status-log {
+            margin-top: 30px;
+            padding: 10px 20px;
+            border-radius: 20px;
+            background: rgba(255,255,255,0.05);
+            color: var(--highlight-color);
+            font-family: var(--font-mono);
+            min-height: 40px;
+            display: flex; align-items: center;
+        }
+
+        /* --- CODE (RIGHT) --- */
+        .code-body {
+            flex: 1;
+            overflow-y: auto;
+            background: #1e1e1e;
+            padding: 10px 0;
+            font-family: var(--font-mono);
+            font-size: 0.8rem;
+        }
+
+        .code-line {
+            display: flex;
+            padding: 2px 15px;
+            color: #d4d4d4;
+            line-height: 1.5;
+        }
+
+        .line-num { width: 30px; color: #666; user-select: none; text-align: right; margin-right: 15px; }
+        .line-code { white-space: pre; }
+
+        .highlight {
+            background: #264f78;
+            color: white;
+            border-left: 3px solid var(--highlight-color);
+        }
+
+    </style>
+</head>
+<body>
+
+    <header>
+        <div style="display: flex; align-items: center;">
+            <h1>C Code Visualizer <span class="badge">PRO</span></h1>
+        </div>
+        <div style="font-size: 0.9rem; color: var(--text-muted);">Topic: Linear Queue Implementation</div>
+    </header>
+
+    <main>
+        <section class="panel">
+            <div class="panel-header">Operations</div>
+            <div class="controls-body">
+                <div style="margin-bottom: 10px;">
+                    <label style="font-size: 0.8rem; color: #aaa;">Value to Insert:</label>
+                    <input type="number" id="inputVal" value="10">
+                </div>
+                
+                <button class="btn-insert" onclick="executeInsert()">1. Insert (Enqueue)</button>
+                <button class="btn-delete" onclick="executeDelete()">2. Delete (Dequeue)</button>
+                
+                <div class="variable-monitor">
+                    <div class="panel-header" style="padding: 0; margin-bottom: 10px; background: none; border: none;">Variable Watch</div>
+                    <div class="var-row"><span>s[3]</span> <span>Array Size: 3</span></div>
+                    <div class="var-row"><span>front</span> <span class="val" id="var-front">0</span></div>
+                    <div class="var-row"><span>rear</span> <span class="val" id="var-rear">-1</span></div>
+                </div>
+
+                <button class="btn-reset" onclick="resetQueue()">Reset System</button>
+            </div>
+        </section>
+
+        <section class="panel">
+            <div class="panel-header">Memory View</div>
+            <div class="visualizer-body">
+                
+                <div class="queue-container">
+                    <div class="queue-box" id="box-0"><span class="index-label">0</span><div class="content"></div></div>
+                    <div class="queue-box" id="box-1"><span class="index-label">1</span><div class="content"></div></div>
+                    <div class="queue-box" id="box-2"><span class="index-label">2</span><div class="content"></div></div>
+
+                    <div class="pointer-container">
+                        <div class="pointer pointer-front" id="ptr-front">↑ Front</div>
+                        <div class="pointer pointer-rear" id="ptr-rear">↑ Rear</div>
+                    </div>
+                </div>
+
+                <div class="status-log" id="statusLog">// Waiting for command...</div>
+            </div>
+        </section>
+
+        <section class="panel">
+            <div class="panel-header">Source Code Execution</div>
+            <div class="code-body" id="codeContainer">
+                </div>
+        </section>
+    </main>
+
+    <script>
+        // --- C CODE TO DISPLAY ---
+        const cCode = `void insert()
+{
+    int item;
+    if(rear == 3-1)
+    {
+        printf("Queue overflow\\n");
+        return;
+    }
+    printf("Enter item:");
+    scanf("%d", &item);
+    rear += 1;
+    s[rear] = item;
+}
+
+void delete()
+{
+    if(front > rear)
+    {
+        printf("Queue is empty\\n");
+        return;
+    }
+    printf("Poped: %d", s[front]);
+    front++;
+}`;
+
+        // --- LINE MAPPING FOR HIGHLIGHTING ---
+        // Maps logic steps to line numbers in the string above (0-indexed)
+        const lineMap = {
+            insert_start: 0,
+            insert_check_full: 2, // if(rear == 3-1)
+            insert_overflow_print: 4,
+            insert_overflow_return: 5,
+            insert_scan: 8, // scanf
+            insert_inc_rear: 9, // rear += 1
+            insert_assign: 10, // s[rear] = item
+            
+            delete_start: 13,
+            delete_check_empty: 15, // if(front > rear)
+            delete_underflow_print: 17,
+            delete_underflow_return: 18,
+            delete_print_pop: 20,
+            delete_inc_front: 21
+        };
+
+        // --- STATE VARIABLES ---
+        let rear = -1;
+        let front = 0;
+        const maxSize = 3;
+        let queueArray = [null, null, null];
+        let isAnimating = false;
+
+        // --- INIT ---
+        window.onload = () => {
+            renderCode();
+            updateVisuals();
+        };
+
+        // --- VISUALIZATION LOGIC ---
+
+        function log(msg, type="neutral") {
+            const logEl = document.getElementById('statusLog');
+            logEl.innerText = `// ${msg}`;
+            logEl.style.color = type === 'error' ? '#ef4444' : (type === 'success' ? '#22c55e' : '#eab308');
+        }
+
+        async function executeInsert() {
+            if (isAnimating) return;
+            isAnimating = true;
+            
+            const val = document.getElementById('inputVal').value;
+            if (val === '') { alert("Enter a value"); isAnimating = false; return; }
+
+            // 1. Function Start
+            highlight(lineMap.insert_start);
+            log("Calling insert()...");
+            await sleep(800);
+
+            // 2. Check Overflow
+            highlight(lineMap.insert_check_full);
+            log(`Checking if rear (${rear}) == 2...`);
+            await sleep(800);
+
+            if (rear === maxSize - 1) {
+                highlight(lineMap.insert_overflow_print);
+                log("Error: Queue Overflow!", "error");
+                await sleep(1000);
+                highlight(lineMap.insert_overflow_return);
+                isAnimating = false;
+                return;
+            }
+
+            // 3. Scanf
+            highlight(lineMap.insert_scan);
+            log(`Reading input: ${val}`);
+            await sleep(800);
+
+            // 4. Increment Rear
+            highlight(lineMap.insert_inc_rear);
+            rear++;
+            updatePointers();
+            log(`rear incremented to ${rear}`);
+            await sleep(800);
+
+            // 5. Assign Value
+            highlight(lineMap.insert_assign);
+            queueArray[rear] = val;
+            updateBoxes();
+            log(`s[${rear}] set to ${val}`, "success");
+            await sleep(800);
+
+            clearHighlight();
+            isAnimating = false;
+        }
+
+        async function executeDelete() {
+            if (isAnimating) return;
+            isAnimating = true;
+
+            // 1. Function Start
+            highlight(lineMap.delete_start);
+            log("Calling delete()...");
+            await sleep(800);
+
+            // 2. Check Underflow
+            highlight(lineMap.delete_check_empty);
+            log(`Checking if front (${front}) > rear (${rear})...`);
+            await sleep(800);
+
+            if (front > rear) {
+                highlight(lineMap.delete_underflow_print);
+                log("Error: Queue is Empty!", "error");
+                await sleep(1000);
+                highlight(lineMap.delete_underflow_return);
+                isAnimating = false;
+                return;
+            }
+
+            // 3. Print Pop
+            highlight(lineMap.delete_print_pop);
+            const poppedVal = queueArray[front];
+            log(`Item popped: ${poppedVal}`, "success");
+            
+            // Visually dim the box to show it's "gone" (logically)
+            const box = document.getElementById(`box-${front}`);
+            box.classList.add('dequeued');
+            box.classList.remove('filled');
+            await sleep(800);
+
+            // 4. Increment Front
+            highlight(lineMap.delete_inc_front);
+            front++;
+            updatePointers();
+            log(`front incremented to ${front}`);
+            await sleep(800);
+
+            clearHighlight();
+            isAnimating = false;
+        }
+
+        function resetQueue() {
+            rear = -1;
+            front = 0;
+            queueArray = [null, null, null];
+            
+            // Reset visuals
+            document.querySelectorAll('.queue-box').forEach(b => {
+                b.classList.remove('filled', 'dequeued');
+                b.querySelector('.content').innerText = '';
+            });
+            updateVisuals();
+            log("System Reset");
+            clearHighlight();
+        }
+
+        // --- HELPER FUNCTIONS ---
+
+        function updateVisuals() {
+            updatePointers();
+            updateBoxes();
+            document.getElementById('var-front').innerText = front;
+            document.getElementById('var-rear').innerText = rear;
+        }
+
+        function updatePointers() {
+            // Calculate position based on box width (80px) + gap (10px) = 90px per index
+            const step = 90;
+            
+            const rearEl = document.getElementById('ptr-rear');
+            const frontEl = document.getElementById('ptr-front');
+
+            // Visual clamp to keep pointers nearby even if out of bounds (for visual logic)
+            let visualRear = rear < 0 ? -0.5 : rear; 
+            let visualFront = front;
+
+            rearEl.style.left = `${visualRear * step}px`;
+            frontEl.style.left = `${visualFront * step}px`;
+            
+            // Update variable monitor text
+            document.getElementById('var-front').innerText = front;
+            document.getElementById('var-rear').innerText = rear;
+        }
+
+        function updateBoxes() {
+            for(let i=0; i<maxSize; i++) {
+                const box = document.getElementById(`box-${i}`);
+                const content = box.querySelector('.content');
+                
+                if (queueArray[i] !== null && i >= front && i <= rear) {
+                    content.innerText = queueArray[i];
+                    box.classList.add('filled');
+                    box.classList.remove('dequeued');
+                } else if (i < front && queueArray[i] !== null) {
+                    // It was there, but now dequeued
+                    content.innerText = queueArray[i];
+                    box.classList.add('dequeued');
+                    box.classList.remove('filled');
+                } else {
+                    content.innerText = '';
+                    box.classList.remove('filled', 'dequeued');
+                }
+            }
+        }
+
+        function renderCode() {
+            const container = document.getElementById('codeContainer');
+            const lines = cCode.split('\n');
+            lines.forEach((line, index) => {
+                const div = document.createElement('div');
+                div.className = 'code-line';
+                div.id = `line-${index}`;
+                div.innerHTML = `<span class="line-num">${index + 1}</span><span class="line-code">${escapeHtml(line)}</span>`;
+                container.appendChild(div);
+            });
+        }
+
+        function highlight(lineIndex) {
+            document.querySelectorAll('.code-line').forEach(el => el.classList.remove('highlight'));
+            const el = document.getElementById(`line-${lineIndex}`);
+            if (el) {
+                el.classList.add('highlight');
+                el.scrollIntoView({ behavior: 'smooth', block: 'center' });
+            }
+        }
+
+        function clearHighlight() {
+            document.querySelectorAll('.code-line').forEach(el => el.classList.remove('highlight'));
+        }
+
+        function sleep(ms) { return new Promise(resolve => setTimeout(resolve, ms)); }
+
+        function escapeHtml(text) {
+            return text.replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;")
+                       .replace(/ /g, "&nbsp;"); // Preserve spaces for indentation
+        }
+    </script>
+</body>
+</html>

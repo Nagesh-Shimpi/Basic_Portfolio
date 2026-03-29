@@ -1,0 +1,452 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="light">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ZenDo | Professional Task Manager</title>
+    <style>
+        /* --- CSS VARIABLES & THEME --- */
+        :root {
+            --primary: #3b82f6; /* Todoist/Things Blue */
+            --danger: #ef4444;
+            --warning: #f59e0b;
+            --success: #10b981;
+            
+            --bg-body: #f3f4f6;
+            --bg-card: #ffffff;
+            --text-main: #1f2937;
+            --text-muted: #6b7280;
+            --border: #e5e7eb;
+            --shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+            
+            --radius: 12px;
+            --font-main: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+            --transition: all 0.3s ease;
+        }
+
+        [data-theme="dark"] {
+            --bg-body: #111827;
+            --bg-card: #1f2937;
+            --text-main: #f9fafb;
+            --text-muted: #9ca3af;
+            --border: #374151;
+            --shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.5);
+        }
+
+        /* --- RESET & LAYOUT --- */
+        * { box-sizing: border-box; margin: 0; padding: 0; }
+        
+        body {
+            font-family: var(--font-main);
+            background-color: var(--bg-body);
+            color: var(--text-main);
+            display: flex;
+            justify-content: center;
+            min-height: 100vh;
+            padding: 2rem 1rem;
+            transition: background-color 0.3s ease;
+        }
+
+        .app-container {
+            background: var(--bg-card);
+            width: 100%;
+            max-width: 600px;
+            border-radius: var(--radius);
+            box-shadow: var(--shadow);
+            padding: 2rem;
+            display: flex;
+            flex-direction: column;
+            gap: 1.5rem;
+            position: relative;
+        }
+
+        /* --- HEADER --- */
+        header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        h1 { font-size: 1.5rem; font-weight: 700; letter-spacing: -0.025em; }
+        
+        .date-display { font-size: 0.875rem; color: var(--text-muted); margin-top: 0.25rem; }
+
+        .theme-toggle {
+            background: none;
+            border: 1px solid var(--border);
+            color: var(--text-main);
+            padding: 0.5rem;
+            border-radius: 8px;
+            cursor: pointer;
+            font-size: 1.2rem;
+            transition: var(--transition);
+        }
+        .theme-toggle:hover { background: var(--border); }
+
+        /* --- INPUT AREA (SMART CAPTURE) --- */
+        .input-group {
+            display: flex;
+            gap: 0.5rem;
+            position: relative;
+        }
+
+        .input-wrapper {
+            position: relative;
+            flex-grow: 1;
+        }
+
+        #taskInput {
+            width: 100%;
+            padding: 1rem 1rem 1rem 1rem;
+            border: 2px solid var(--border);
+            border-radius: var(--radius);
+            background: var(--bg-card);
+            color: var(--text-main);
+            font-size: 1rem;
+            transition: var(--transition);
+        }
+
+        #taskInput:focus {
+            outline: none;
+            border-color: var(--primary);
+        }
+
+        /* Smart Parser Hints */
+        .parser-hint {
+            position: absolute;
+            right: 10px;
+            top: 50%;
+            transform: translateY(-50%);
+            font-size: 0.75rem;
+            color: var(--text-muted);
+            pointer-events: none;
+            opacity: 0.6;
+            display: none; /* Shown via JS */
+        }
+
+        #addBtn {
+            background-color: var(--primary);
+            color: white;
+            border: none;
+            padding: 0 1.5rem;
+            border-radius: var(--radius);
+            font-weight: 600;
+            cursor: pointer;
+            transition: var(--transition);
+        }
+
+        #addBtn:hover { filter: brightness(110%); }
+
+        /* --- FILTERS --- */
+        .filters {
+            display: flex;
+            gap: 0.5rem;
+            padding-bottom: 1rem;
+            border-bottom: 1px solid var(--border);
+            overflow-x: auto;
+        }
+
+        .filter-btn {
+            background: transparent;
+            border: none;
+            color: var(--text-muted);
+            padding: 0.5rem 1rem;
+            border-radius: 20px;
+            cursor: pointer;
+            font-size: 0.875rem;
+            font-weight: 500;
+            transition: var(--transition);
+        }
+
+        .filter-btn.active {
+            background: var(--primary);
+            color: white;
+        }
+
+        /* --- TASK LIST --- */
+        ul { list-style: none; }
+
+        .task-item {
+            display: flex;
+            align-items: center;
+            padding: 1rem 0;
+            border-bottom: 1px solid var(--border);
+            animation: slideIn 0.3s ease forwards;
+            gap: 1rem;
+        }
+
+        @keyframes slideIn {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        /* Custom Checkbox (Things 3 Style) */
+        .custom-checkbox {
+            width: 24px;
+            height: 24px;
+            border: 2px solid var(--text-muted);
+            border-radius: 6px;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: var(--transition);
+            flex-shrink: 0;
+        }
+
+        .task-item.completed .custom-checkbox {
+            background-color: var(--text-muted);
+            border-color: var(--text-muted);
+        }
+
+        .check-icon { display: none; color: white; font-size: 14px; }
+        .task-item.completed .check-icon { display: block; }
+
+        .task-content { flex-grow: 1; }
+
+        .task-text {
+            font-size: 1rem;
+            transition: var(--transition);
+            display: block;
+        }
+
+        .task-meta {
+            font-size: 0.75rem;
+            color: var(--text-muted);
+            margin-top: 4px;
+            display: flex;
+            gap: 8px;
+            align-items: center;
+        }
+
+        .tag {
+            padding: 2px 6px;
+            border-radius: 4px;
+            background: var(--border);
+            font-weight: 600;
+        }
+
+        /* Priority Colors */
+        .p-high { color: var(--danger); border-color: var(--danger); }
+        .p-med { color: var(--warning); border-color: var(--warning); }
+        .p-low { color: var(--success); border-color: var(--success); }
+
+        /* Completed State */
+        .task-item.completed .task-text {
+            text-decoration: line-through;
+            color: var(--text-muted);
+            opacity: 0.7;
+        }
+
+        .delete-btn {
+            background: none;
+            border: none;
+            color: var(--text-muted);
+            cursor: pointer;
+            opacity: 0;
+            transition: var(--transition);
+            font-size: 1.2rem;
+        }
+
+        .task-item:hover .delete-btn { opacity: 1; }
+        .delete-btn:hover { color: var(--danger); }
+
+        /* --- EMPTY STATE --- */
+        .empty-state {
+            text-align: center;
+            padding: 3rem 0;
+            color: var(--text-muted);
+            display: none;
+        }
+        
+        .empty-state img { width: 120px; opacity: 0.5; margin-bottom: 1rem; }
+
+    </style>
+</head>
+<body>
+
+    <div class="app-container">
+        <header>
+            <div>
+                <h1>My Tasks</h1>
+                <div class="date-display" id="currentDate"></div>
+            </div>
+            <button class="theme-toggle" id="themeToggle" title="Toggle Dark Mode">🌙</button>
+        </header>
+
+        <div class="input-group">
+            <div class="input-wrapper">
+                <input type="text" id="taskInput" placeholder="Add a task... (Try typing '!high' or '!work')">
+                <span class="parser-hint" id="parserHint"></span>
+            </div>
+            <button id="addBtn">Add</button>
+        </div>
+
+        <div class="filters">
+            <button class="filter-btn active" onclick="filterTasks('all')">All</button>
+            <button class="filter-btn" onclick="filterTasks('active')">Active</button>
+            <button class="filter-btn" onclick="filterTasks('completed')">Completed</button>
+        </div>
+
+        <ul id="taskList"></ul>
+
+        <div class="empty-state" id="emptyState">
+            <p>🎉 All caught up! Enjoy your day.</p>
+        </div>
+    </div>
+
+    <script>
+        // --- STATE MANAGEMENT ---
+        let tasks = JSON.parse(localStorage.getItem('zenTasks')) || [];
+        let currentFilter = 'all';
+
+        // --- DOM ELEMENTS ---
+        const taskInput = document.getElementById('taskInput');
+        const taskList = document.getElementById('taskList');
+        const addBtn = document.getElementById('addBtn');
+        const emptyState = document.getElementById('emptyState');
+        const themeToggle = document.getElementById('themeToggle');
+        const parserHint = document.getElementById('parserHint');
+
+        // --- INITIALIZATION ---
+        document.getElementById('currentDate').textContent = new Date().toLocaleDateString('en-US', { weekday: 'long', month: 'long', day: 'numeric' });
+        
+        if (localStorage.getItem('theme') === 'dark') {
+            document.documentElement.setAttribute('data-theme', 'dark');
+            themeToggle.textContent = '☀️';
+        }
+
+        renderTasks();
+
+        // --- CORE FUNCTIONS ---
+
+        function addTask() {
+            const rawText = taskInput.value.trim();
+            if (!rawText) return;
+
+            // SMART PARSING (NLP Simulation)
+            let priority = 'low';
+            let category = 'General';
+            let cleanText = rawText;
+
+            // Detect Priority
+            if (rawText.includes('!high')) { priority = 'high'; cleanText = cleanText.replace('!high', ''); }
+            else if (rawText.includes('!med')) { priority = 'medium'; cleanText = cleanText.replace('!med', ''); }
+            
+            // Detect Category (Simple hashtag logic)
+            if (rawText.includes('#work')) { category = 'Work'; cleanText = cleanText.replace('#work', ''); }
+            else if (rawText.includes('#personal')) { category = 'Personal'; cleanText = cleanText.replace('#personal', ''); }
+            else if (rawText.includes('#shopping')) { category = 'Shopping'; cleanText = cleanText.replace('#shopping', ''); }
+
+            const newTask = {
+                id: Date.now(),
+                text: cleanText.trim(),
+                completed: false,
+                priority: priority,
+                category: category,
+                createdAt: new Date().toISOString()
+            };
+
+            tasks.unshift(newTask); // Add to top
+            saveAndRender();
+            taskInput.value = '';
+            parserHint.style.display = 'none';
+        }
+
+        function toggleTask(id) {
+            tasks = tasks.map(t => t.id === id ? { ...t, completed: !t.completed } : t);
+            // Play sound effect (optional)
+            // new Audio('https://freesound.org/data/previews/171/171671_2437358-lq.mp3').play().catch(() => {});
+            saveAndRender();
+        }
+
+        function deleteTask(id) {
+            tasks = tasks.filter(t => t.id !== id);
+            saveAndRender();
+        }
+
+        function filterTasks(status) {
+            currentFilter = status;
+            document.querySelectorAll('.filter-btn').forEach(btn => btn.classList.remove('active'));
+            event.target.classList.add('active');
+            renderTasks();
+        }
+
+        function saveAndRender() {
+            localStorage.setItem('zenTasks', JSON.stringify(tasks));
+            renderTasks();
+        }
+
+        function renderTasks() {
+            taskList.innerHTML = '';
+            
+            let filteredTasks = tasks;
+            if (currentFilter === 'active') filteredTasks = tasks.filter(t => !t.completed);
+            if (currentFilter === 'completed') filteredTasks = tasks.filter(t => t.completed);
+
+            if (filteredTasks.length === 0) {
+                emptyState.style.display = 'block';
+            } else {
+                emptyState.style.display = 'none';
+            }
+
+            filteredTasks.forEach(task => {
+                const li = document.createElement('li');
+                li.className = `task-item ${task.completed ? 'completed' : ''}`;
+                
+                // Priority Color Logic
+                let pColorClass = 'p-low';
+                if(task.priority === 'high') pColorClass = 'p-high';
+                if(task.priority === 'medium') pColorClass = 'p-med';
+
+                li.innerHTML = `
+                    <div class="custom-checkbox ${pColorClass}" onclick="toggleTask(${task.id})">
+                        <span class="check-icon">✓</span>
+                    </div>
+                    <div class="task-content">
+                        <span class="task-text">${task.text}</span>
+                        <div class="task-meta">
+                            <span class="tag">${task.category}</span>
+                            ${task.priority !== 'low' ? `<span style="text-transform:capitalize; color: var(--text-muted)">• ${task.priority}</span>` : ''}
+                        </div>
+                    </div>
+                    <button class="delete-btn" onclick="deleteTask(${task.id})">×</button>
+                `;
+                taskList.appendChild(li);
+            });
+        }
+
+        // --- EVENT LISTENERS ---
+
+        // Theme Toggle
+        themeToggle.addEventListener('click', () => {
+            const current = document.documentElement.getAttribute('data-theme');
+            const next = current === 'dark' ? 'light' : 'dark';
+            document.documentElement.setAttribute('data-theme', next);
+            localStorage.setItem('theme', next);
+            themeToggle.textContent = next === 'dark' ? '☀️' : '🌙';
+        });
+
+        // Add Task on Enter
+        taskInput.addEventListener('keypress', (e) => {
+            if (e.key === 'Enter') addTask();
+        });
+
+        // Smart Input Hints
+        taskInput.addEventListener('input', (e) => {
+            const val = e.target.value;
+            if (val.includes('!')) {
+                parserHint.textContent = 'Detected Priority: !high, !med';
+                parserHint.style.display = 'block';
+            } else if (val.includes('#')) {
+                parserHint.textContent = 'Detected Category: #work, #personal';
+                parserHint.style.display = 'block';
+            } else {
+                parserHint.style.display = 'none';
+            }
+        });
+
+        addBtn.addEventListener('click', addTask);
+    </script>
+</body>
+</html>

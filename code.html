@@ -1,0 +1,239 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Singly Linked List: Address Visualizer</title>
+    <style>
+        :root {
+            --bg: #0f172a;
+            --card: #1e293b;
+            --accent: #38bdf8;
+            --pointer: #f472b6;
+            --node-text: #f8fafc;
+        }
+
+        body {
+            font-family: 'Fira Code', monospace;
+            background-color: var(--bg);
+            color: var(--node-text);
+            margin: 0;
+            padding: 20px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+
+        .explanation {
+            max-width: 800px;
+            background: var(--card);
+            padding: 20px;
+            border-radius: 12px;
+            margin-bottom: 20px;
+            border-left: 5px solid var(--accent);
+        }
+
+        /* The List Container */
+        #list-display {
+            display: flex;
+            align-items: center;
+            justify-content: flex-start;
+            min-height: 200px;
+            overflow-x: auto;
+            width: 100%;
+            padding: 40px;
+            background: #111827;
+            border-radius: 15px;
+            margin-bottom: 30px;
+        }
+
+        /* The Node Design */
+        .node-wrapper {
+            display: flex;
+            align-items: center;
+            position: relative;
+            animation: slideIn 0.5s ease-out;
+        }
+
+        .node-box {
+            display: flex;
+            flex-direction: column;
+            border: 2px solid var(--accent);
+            border-radius: 8px;
+            background: #2d3748;
+            min-width: 120px;
+            box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.5);
+        }
+
+        .addr-label {
+            font-size: 0.7rem;
+            color: var(--pointer);
+            padding: 5px;
+            text-align: center;
+            background: rgba(0,0,0,0.3);
+        }
+
+        .data-val {
+            font-size: 1.5rem;
+            font-weight: bold;
+            text-align: center;
+            padding: 15px;
+            border-bottom: 1px solid #4a5568;
+        }
+
+        .next-ptr {
+            font-size: 0.8rem;
+            padding: 8px;
+            text-align: center;
+            color: var(--accent);
+        }
+
+        .arrow {
+            font-size: 2rem;
+            margin: 0 15px;
+            color: var(--accent);
+            text-shadow: 0 0 10px var(--accent);
+        }
+
+        .head-tag {
+            position: absolute;
+            top: -45px;
+            left: 50%;
+            transform: translateX(-50%);
+            background: #ef4444;
+            padding: 4px 10px;
+            border-radius: 4px;
+            font-size: 0.8rem;
+            font-weight: bold;
+        }
+
+        /* Controls */
+        .controls {
+            display: flex;
+            gap: 10px;
+            background: var(--card);
+            padding: 20px;
+            border-radius: 12px;
+            flex-wrap: wrap;
+            justify-content: center;
+        }
+
+        input {
+            padding: 10px;
+            border-radius: 5px;
+            border: 1px solid #334155;
+            background: #0f172a;
+            color: white;
+            width: 80px;
+        }
+
+        button {
+            padding: 10px 20px;
+            background: var(--accent);
+            border: none;
+            border-radius: 5px;
+            color: #0f172a;
+            font-weight: bold;
+            cursor: pointer;
+            transition: 0.3s;
+        }
+
+        button:hover {
+            filter: brightness(1.2);
+            transform: translateY(-2px);
+        }
+
+        @keyframes slideIn {
+            from { opacity: 0; transform: translateY(20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+    </style>
+</head>
+<body>
+
+    <div class="explanation">
+        <h3>Memory Address Visualization</h3>
+        <p>In C, each <b>Node</b> is a block in memory at a specific <b>Hexadecimal Address</b> (like <code style="color:var(--pointer)">0x4A1</code>). 
+        The "Next" pointer simply stores the address of the <i>next</i> house. Moving through the list is just jumping from one address to the next.</p>
+    </div>
+
+    <div id="list-display"></div>
+
+    <div class="controls">
+        <input type="number" id="valInput" placeholder="Value" value="10">
+        <input type="number" id="posInput" placeholder="Pos" value="1">
+        <button onclick="insert()">Insert at Position</button>
+        <button onclick="resetList()" style="background:#64748b">Reset</button>
+    </div>
+
+    <script>
+        // Pre-defined list with fake memory addresses
+        let list = [
+            { val: 8, addr: "0x100" },
+            { val: 9, addr: "0x2F4" },
+            { val: 11, addr: "0x3A1" },
+            { val: 7, addr: "0x4B2" },
+            { val: 2, addr: "0x5C9" }
+        ];
+
+        function generateRandomAddr() {
+            return "0x" + Math.floor(Math.random()*16777215).toString(16).toUpperCase().substring(0,3);
+        }
+
+        function render() {
+            const display = document.getElementById('list-display');
+            display.innerHTML = '';
+
+            list.forEach((node, index) => {
+                const isLast = index === list.length - 1;
+                const nextAddr = isLast ? "NULL" : list[index + 1].addr;
+                
+                const nodeHtml = `
+                    <div class="node-wrapper">
+                        ${index === 0 ? '<div class="head-tag">HEAD</div>' : ''}
+                        <div class="node-box">
+                            <div class="addr-label">Addr: ${node.addr}</div>
+                            <div class="data-val">${node.val}</div>
+                            <div class="next-ptr">Next: ${nextAddr}</div>
+                        </div>
+                        <div class="arrow">→</div>
+                    </div>
+                `;
+                display.innerHTML += nodeHtml;
+            });
+
+            display.innerHTML += `<div style="color:#64748b; font-weight:bold;">NULL</div>`;
+        }
+
+        function insert() {
+            const val = parseInt(document.getElementById('valInput').value);
+            const pos = parseInt(document.getElementById('posInput').value);
+            const newAddr = generateRandomAddr();
+
+            const newNode = { val: val, addr: newAddr };
+
+            if (pos <= 1) {
+                list.unshift(newNode);
+            } else if (pos > list.length) {
+                list.push(newNode);
+            } else {
+                // The Logic: Insert at specific index
+                list.splice(pos - 1, 0, newNode);
+            }
+            render();
+        }
+
+        function resetList() {
+            list = [
+                { val: 8, addr: "0x100" },
+                { val: 9, addr: "0x2F4" },
+                { val: 11, addr: "0x3A1" },
+                { val: 7, addr: "0x4B2" },
+                { val: 2, addr: "0x5C9" }
+            ];
+            render();
+        }
+
+        render();
+    </script>
+</body>
+</html>

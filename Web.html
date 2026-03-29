@@ -1,0 +1,243 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Home | Code Visualizer PRO</title>
+    <style>
+        /* --- 1. VARIABLES & RESET --- */
+        :root {
+            --bg-dark: #05050a;
+            --bg-panel: rgba(255, 255, 255, 0.03);
+            --primary: #42f5bf; /* Neon Teal */
+            --secondary: #96c93d; /* Neon Green */
+            --accent: #7c3aed; /* Deep Purple */
+            --text-main: #e2e8f0;
+            --text-muted: #94a3b8;
+            --font-main: 'Segoe UI', sans-serif;
+            --font-mono: 'Consolas', 'Courier New', monospace;
+        }
+
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+
+        body {
+            background-color: var(--bg-dark);
+            color: var(--text-main);
+            font-family: var(--font-main);
+            overflow-x: hidden;
+            line-height: 1.6;
+        }
+
+        /* --- 2. BACKGROUND FX --- */
+        .background-fx {
+            position: fixed; top: 0; left: 0; width: 100%; height: 100%; z-index: -1;
+            background: 
+                radial-gradient(circle at 15% 50%, rgba(66, 245, 191, 0.05), transparent 25%),
+                radial-gradient(circle at 85% 30%, rgba(124, 58, 237, 0.08), transparent 25%);
+            animation: pulseBg 10s ease-in-out infinite alternate;
+        }
+
+        @keyframes pulseBg {
+            0% { opacity: 0.5; transform: scale(1); }
+            100% { opacity: 1; transform: scale(1.1); }
+        }
+
+        /* --- 3. LAYOUT UTILITIES --- */
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 0 20px;
+        }
+
+        .glass-card {
+            background: var(--bg-panel);
+            backdrop-filter: blur(12px);
+            border: 1px solid rgba(255, 255, 255, 0.05);
+            border-radius: 16px;
+            padding: 2rem;
+            transition: transform 0.3s ease, border-color 0.3s ease;
+        }
+
+        .glass-card:hover {
+            transform: translateY(-5px);
+            border-color: rgba(66, 245, 191, 0.3);
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.5);
+        }
+
+        /* --- 4. NAVIGATION --- */
+        nav {
+            padding: 20px 0;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .logo { font-size: 1.5rem; font-weight: 800; letter-spacing: -1px; color: white; }
+        .logo span { color: var(--primary); }
+
+        /* --- 5. HERO SECTION --- */
+        .hero {
+            height: 85vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            text-align: center;
+            flex-direction: column;
+        }
+
+        .hero h1 {
+            font-size: 4rem;
+            line-height: 1.1;
+            margin-bottom: 20px;
+            background: linear-gradient(135deg, #fff 0%, var(--primary) 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+
+        .hero p {
+            font-size: 1.25rem;
+            color: var(--text-muted);
+            max-width: 600px;
+            margin-bottom: 40px;
+        }
+
+        .cta-btn {
+            display: inline-block;
+            padding: 16px 40px;
+            background: linear-gradient(90deg, var(--primary), var(--secondary));
+            color: #000;
+            font-weight: bold;
+            font-size: 1.1rem;
+            text-decoration: none;
+            border-radius: 50px;
+            box-shadow: 0 0 20px rgba(66, 245, 191, 0.4);
+            transition: all 0.3s ease;
+            text-transform: uppercase;
+        }
+
+        .cta-btn:hover {
+            transform: scale(1.05);
+            box-shadow: 0 0 40px rgba(66, 245, 191, 0.6);
+        }
+
+        /* --- 6. FEATURES & ALGO SECTIONS --- */
+        .section-title {
+            text-align: center; font-size: 2rem; margin-bottom: 3rem; position: relative;
+        }
+        
+        .section-title::after {
+            content: ''; display: block; width: 60px; height: 3px; background: var(--primary);
+            margin: 10px auto 0; border-radius: 2px;
+        }
+
+        .features-grid {
+            display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 20px; margin-bottom: 5rem;
+        }
+
+        .feature-icon { font-size: 2rem; margin-bottom: 1rem; }
+        .features-grid h3 { color: var(--primary); margin-bottom: 10px; font-family: var(--font-mono); }
+        .features-grid p { color: var(--text-muted); font-size: 0.9rem; }
+
+        .algo-section { text-align: center; margin-bottom: 5rem; }
+        .algo-tags { display: flex; justify-content: center; gap: 15px; flex-wrap: wrap; }
+
+        /* Updated to support <a> tags looking like buttons */
+        .algo-tag {
+            padding: 10px 25px;
+            border: 1px solid var(--text-muted);
+            border-radius: 30px;
+            font-family: var(--font-mono);
+            color: var(--text-muted);
+            transition: 0.3s;
+            cursor: pointer;
+            text-decoration: none; /* Crucial for links */
+            display: inline-block;
+        }
+
+        .algo-tag:hover {
+            border-color: var(--primary);
+            color: var(--primary);
+            box-shadow: 0 0 15px rgba(66, 245, 191, 0.2);
+            background: rgba(66, 245, 191, 0.05);
+        }
+
+        /* --- 7. FOOTER --- */
+        footer {
+            border-top: 1px solid rgba(255,255,255,0.05);
+            padding: 3rem 0;
+            text-align: center;
+            background: rgba(0,0,0,0.2);
+            color: var(--text-muted);
+        }
+        .dev-badge {
+            display: inline-block; background: rgba(255, 255, 255, 0.05);
+            padding: 5px 12px; border-radius: 4px; margin: 0 5px; color: #fff;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+        }
+        .highlight-name { color: var(--primary); font-weight: bold; }
+
+        @media (max-width: 768px) { .hero h1 { font-size: 2.5rem; } }
+    </style>
+</head>
+<body>
+
+    <div class="background-fx"></div>
+
+    <div class="container">
+        <nav>
+            <div class="logo">Code Visualizer <span>PRO</span></div>
+            <div style="font-family: var(--font-mono); font-size: 0.8rem; opacity: 0.7;">v1.0.0</div>
+        </nav>
+
+        <section class="hero">
+            <h1>Visualize Algorithms.<br>Understand Code.</h1>
+            <p>An interactive educational tool designed to bridge the gap between theory and execution. Watch sorting algorithms come to life in real-time.</p>
+            <a href="visualizer.html?algo=insertion" class="cta-btn">Launch Visualizer 🚀</a>
+        </section>
+
+        <h2 class="section-title">Key Features</h2>
+        <section class="features-grid">
+            <div class="glass-card">
+                <div class="feature-icon">⚡</div>
+                <h3>Real-Time Sorting</h3>
+                <p>Watch elements swap, compare, and sort with smooth animations and dynamic speed control.</p>
+            </div>
+            <div class="glass-card">
+                <div class="feature-icon">🧠</div>
+                <h3>Live Code Execution</h3>
+                <p>See exactly which line of C code is running at every millisecond of the visualization.</p>
+            </div>
+            <div class="glass-card">
+                <div class="feature-icon">📊</div>
+                <h3>Complexity Analysis</h3>
+                <p>Learn Time and Space complexity constraints for every algorithm selected.</p>
+            </div>
+        </section>
+
+        <div class="algo-section">
+            <h2 class="section-title">Supported Algorithms</h2>
+            <div class="algo-tags">
+                <a href="visualizer.html?algo=insertion" class="algo-tag">Insertion Sort</a>
+                <a href="visualizer.html?algo=quick" class="algo-tag">Quick Sort</a>
+                <a href="visualizer.html?algo=radix" class="algo-tag">Radix Sort</a>
+                <div class="algo-tag" style="opacity: 0.5; cursor: not-allowed;">Binary Search (Soon)</div>
+            </div>
+        </div>
+    </div>
+
+    <footer>
+        <div class="container">
+            <p style="margin-bottom: 15px;">
+                Designed & Developed by <br>
+                <span class="dev-badge"><span class="highlight-name">Nagesh</span> (USN: 3PD24CS122)</span>
+            </p>
+            <p style="margin-bottom: 15px; font-size: 0.85rem; color: #666;">
+                Under the guidance of <span class="highlight-name">POOJA MAM</span>
+            </p>
+            <p style="margin-top: 30px; font-size: 0.75rem; opacity: 0.5;">
+                &copy; 2026 PDA College of Engineering. Built for Educational Excellence.
+            </p>
+        </div>
+    </footer>
+</body>
+</html>

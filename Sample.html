@@ -1,0 +1,1411 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>NexusAI — Powering the Future of AI Data</title>
+  <meta name="description" content="NexusAI is the next-generation Web3 platform powering decentralized AI data infrastructure. Join thousands of nodes, earn rewards, and shape the future." />
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700;800;900&family=Space+Grotesk:wght@300;400;500;600;700&display=swap" rel="stylesheet" />
+  <style>
+    /* ===== CSS RESET & VARIABLES ===== */
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    :root {
+      --blue: #00c6ff;
+      --purple: #7b2ff7;
+      --pink: #f72585;
+      --cyan: #00f5d4;
+      --dark: #0a0a0a;
+      --dark2: #0d0d0d;
+      --dark3: #111019;
+      --glass: rgba(255,255,255,0.038);
+      --glass-border: rgba(255,255,255,0.08);
+      --text: #eef2ff;
+      --muted: #6b7799;
+      --grad1: linear-gradient(135deg, #7b2ff7, #00c6ff);
+      --grad2: linear-gradient(135deg, #f72585, #7b2ff7);
+      --grad3: linear-gradient(135deg, #00c6ff, #00f5d4);
+      /* Spacing scale */
+      --space-xs: 8px;
+      --space-sm: 16px;
+      --space-md: 32px;
+      --space-lg: 64px;
+      --space-xl: 96px;
+      --space-2xl: 140px;
+    }
+
+    html { scroll-behavior: smooth; overflow-x: hidden; }
+
+    body {
+      font-family: 'Space Grotesk', sans-serif;
+      background: var(--dark);
+      color: var(--text);
+      overflow-x: hidden;
+      line-height: 1.6;
+      font-size: 16px;
+      -webkit-font-smoothing: antialiased;
+      -moz-osx-font-smoothing: grayscale;
+    }
+
+    /* ===== SCROLLBAR ===== */
+    ::-webkit-scrollbar { width: 6px; }
+    ::-webkit-scrollbar-track { background: var(--dark); }
+    ::-webkit-scrollbar-thumb { background: var(--purple); border-radius: 3px; }
+
+    /* ===== CANVAS BACKGROUND ===== */
+    #bg-canvas {
+      position: fixed;
+      top: 0; left: 0;
+      width: 100%; height: 100%;
+      z-index: 0;
+      pointer-events: none;
+    }
+
+    /* ===== NAVBAR ===== */
+    nav {
+      position: fixed;
+      top: 0; left: 0; right: 0;
+      z-index: 100;
+      padding: 18px 72px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      backdrop-filter: blur(24px);
+      -webkit-backdrop-filter: blur(24px);
+      background: rgba(10,10,10,0.75);
+      border-bottom: 1px solid var(--glass-border);
+      transition: padding 0.3s ease, background 0.3s ease;
+    }
+
+    .nav-logo {
+      font-family: 'Outfit', sans-serif;
+      font-size: 1.4rem;
+      font-weight: 800;
+      background: var(--grad1);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+      letter-spacing: -0.5px;
+      line-height: 1;
+    }
+
+    .nav-links {
+      display: flex;
+      gap: 40px;
+      list-style: none;
+    }
+
+    .nav-links a {
+      text-decoration: none;
+      color: var(--muted);
+      font-size: 0.875rem;
+      font-weight: 500;
+      letter-spacing: 0.2px;
+      transition: color 0.25s ease;
+      position: relative;
+    }
+
+    .nav-links a::after {
+      content: '';
+      position: absolute;
+      bottom: -5px; left: 0;
+      width: 0; height: 1.5px;
+      background: var(--grad1);
+      border-radius: 2px;
+      transition: width 0.25s ease;
+    }
+
+    .nav-links a:hover { color: var(--text); }
+    .nav-links a:hover::after { width: 100%; }
+
+    .nav-cta {
+      padding: 9px 22px;
+      border-radius: 50px;
+      background: var(--grad1);
+      color: #fff !important;
+      font-weight: 600;
+      font-size: 0.83rem;
+      letter-spacing: 0.2px;
+      text-decoration: none;
+      transition: transform 0.25s ease, box-shadow 0.25s ease;
+      box-shadow: 0 0 16px rgba(123,47,247,0.35);
+    }
+
+    .nav-cta:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 0 28px rgba(0,198,255,0.45);
+    }
+
+    /* ===== HERO SECTION ===== */
+    #hero {
+      position: relative;
+      z-index: 1;
+      min-height: 100vh;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      text-align: center;
+      padding: 120px 20px 80px;
+      overflow: hidden;
+      background: radial-gradient(ellipse 80% 60% at 50% 0%, rgba(123,47,247,0.12), transparent 70%),
+                  radial-gradient(ellipse 60% 40% at 80% 50%, rgba(0,198,255,0.07), transparent 60%);
+    }
+
+    /* Orbs */
+    .hero-orb {
+      position: absolute;
+      border-radius: 50%;
+      filter: blur(100px);
+      opacity: 0.3;
+      pointer-events: none;
+      animation: float 10s ease-in-out infinite;
+    }
+    .hero-orb-1 {
+      width: 600px; height: 600px;
+      background: radial-gradient(circle, #7b2ff7, transparent 70%);
+      top: -200px; left: -150px;
+    }
+    .hero-orb-2 {
+      width: 500px; height: 500px;
+      background: radial-gradient(circle, #00c6ff, transparent 70%);
+      top: 80px; right: -120px;
+      animation-delay: -4s;
+    }
+    .hero-orb-3 {
+      width: 380px; height: 380px;
+      background: radial-gradient(circle, #7b2ff7 20%, #00c6ff, transparent 70%);
+      bottom: -80px; left: 35%;
+      animation-delay: -7s;
+      opacity: 0.15;
+    }
+
+    @keyframes float {
+      0%, 100% { transform: translateY(0) scale(1); }
+      50% { transform: translateY(-40px) scale(1.06); }
+    }
+
+    /* Grid lines overlay */
+    #hero::before {
+      content: '';
+      position: absolute;
+      inset: 0;
+      background-image:
+        linear-gradient(rgba(123,47,247,0.04) 1px, transparent 1px),
+        linear-gradient(90deg, rgba(123,47,247,0.04) 1px, transparent 1px);
+      background-size: 60px 60px;
+      pointer-events: none;
+    }
+
+    /* === GLASS HERO CARD === */
+    .hero-glass-card {
+      position: relative;
+      z-index: 2;
+      max-width: 780px;
+      width: 100%;
+      padding: 72px 64px 64px;
+      border-radius: 28px;
+      background: rgba(255,255,255,0.034);
+      border: 1px solid rgba(255,255,255,0.09);
+      backdrop-filter: blur(40px);
+      -webkit-backdrop-filter: blur(40px);
+      box-shadow:
+        0 0 0 1px rgba(123,47,247,0.1) inset,
+        0 48px 140px rgba(0,0,0,0.55),
+        0 0 100px rgba(123,47,247,0.07);
+      animation: cardReveal 1s 0.1s cubic-bezier(0.22,1,0.36,1) forwards;
+      opacity: 0;
+    }
+
+    /* Top shimmer edge on the card */
+    .hero-glass-card::before {
+      content: '';
+      position: absolute;
+      top: 0; left: 10%; right: 10%;
+      height: 1px;
+      background: linear-gradient(90deg, transparent, rgba(123,47,247,0.6), rgba(0,198,255,0.6), transparent);
+      border-radius: 50%;
+    }
+
+    /* Subtle inner glow */
+    .hero-glass-card::after {
+      content: '';
+      position: absolute;
+      inset: 0;
+      border-radius: 32px;
+      background: radial-gradient(ellipse 70% 50% at 50% 0%, rgba(123,47,247,0.06), transparent 70%);
+      pointer-events: none;
+    }
+
+    @keyframes cardReveal {
+      from { opacity: 0; transform: translateY(50px) scale(0.96); }
+      to   { opacity: 1; transform: translateY(0)   scale(1); }
+    }
+
+    /* Badge */
+    .hero-badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 7px;
+      padding: 6px 16px;
+      border-radius: 50px;
+      border: 1px solid rgba(0,198,255,0.22);
+      background: rgba(0,198,255,0.055);
+      font-size: 0.7rem;
+      font-weight: 600;
+      color: rgba(0,198,255,0.85);
+      margin-bottom: 32px;
+      letter-spacing: 2.5px;
+      text-transform: uppercase;
+      animation: fadeInDown 0.7s 0.5s ease forwards;
+      opacity: 0;
+    }
+
+    .badge-dot {
+      width: 5px; height: 5px;
+      background: var(--cyan);
+      border-radius: 50%;
+      animation: pulse-dot 2.2s ease infinite;
+      box-shadow: 0 0 6px var(--cyan), 0 0 12px var(--cyan);
+    }
+
+    @keyframes pulse-dot {
+      0%, 100% { opacity: 1; transform: scale(1); }
+      50% { opacity: 0.3; transform: scale(0.65); }
+    }
+
+    /* Title */
+    .hero-title {
+      font-family: 'Outfit', sans-serif;
+      font-size: clamp(2.4rem, 6vw, 4.8rem);
+      font-weight: 900;
+      line-height: 1.06;
+      letter-spacing: -2px;
+      margin-bottom: 20px;
+      color: #fff;
+      animation: fadeInUp 0.8s 0.7s ease forwards;
+      opacity: 0;
+    }
+
+    /* Glow text effect on title */
+    .hero-title .glow-word {
+      filter: drop-shadow(0 0 20px rgba(123,47,247,0.4));
+    }
+
+    .gradient-text {
+      background: linear-gradient(120deg, #b06ef3, #818cf8, #22d3ee);
+      background-size: 200% auto;
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+      animation: shimmer-text 5s linear infinite;
+    }
+
+    @keyframes shimmer-text {
+      0%   { background-position: 0% center; }
+      100% { background-position: 200% center; }
+    }
+
+    .gradient-text-pink {
+      background: var(--grad2);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+    }
+
+    /* Sub */
+    .hero-sub {
+      font-size: clamp(0.95rem, 1.8vw, 1.1rem);
+      color: rgba(155,165,195,0.88);
+      max-width: 500px;
+      margin: 0 auto 44px;
+      line-height: 1.8;
+      font-weight: 400;
+      letter-spacing: 0.1px;
+      animation: fadeInUp 0.8s 0.9s ease forwards;
+      opacity: 0;
+    }
+
+    /* CTA Group */
+    .hero-cta-group {
+      display: flex;
+      gap: 16px;
+      justify-content: center;
+      flex-wrap: wrap;
+      animation: fadeInUp 0.8s 1.1s ease forwards;
+      opacity: 0;
+    }
+
+    /* Primary glow button */
+    .btn-glow {
+      padding: 17px 44px;
+      border-radius: 50px;
+      font-family: 'Outfit', sans-serif;
+      font-size: 1.05rem;
+      font-weight: 700;
+      cursor: pointer;
+      border: none;
+      outline: none;
+      position: relative;
+      background: linear-gradient(135deg, #7b2ff7, #00c6ff);
+      color: #fff;
+      letter-spacing: 0.5px;
+      overflow: hidden;
+      transition: transform 0.35s ease, box-shadow 0.35s ease;
+      box-shadow:
+        0 0 24px rgba(123,47,247,0.55),
+        0 0 48px rgba(0,198,255,0.2),
+        0 8px 32px rgba(0,0,0,0.4);
+    }
+
+    .btn-glow::before {
+      content: '';
+      position: absolute;
+      top: 0; left: -100%;
+      width: 100%; height: 100%;
+      background: linear-gradient(90deg, transparent, rgba(255,255,255,0.22), transparent);
+      transition: left 0.55s ease;
+    }
+
+    .btn-glow:hover {
+      transform: translateY(-4px) scale(1.04);
+      box-shadow:
+        0 0 40px rgba(123,47,247,0.7),
+        0 0 80px rgba(0,198,255,0.35),
+        0 12px 40px rgba(0,0,0,0.5);
+    }
+    .btn-glow:hover::before { left: 100%; }
+
+    /* Outline button */
+    .btn-outline {
+      padding: 16px 38px;
+      border-radius: 50px;
+      font-family: 'Outfit', sans-serif;
+      font-size: 1rem;
+      font-weight: 600;
+      cursor: pointer;
+      background: rgba(255,255,255,0.04);
+      color: var(--text);
+      border: 1px solid rgba(255,255,255,0.1);
+      backdrop-filter: blur(10px);
+      transition: all 0.3s ease;
+      letter-spacing: 0.3px;
+    }
+
+    .btn-outline:hover {
+      border-color: rgba(0,198,255,0.45);
+      box-shadow: 0 0 20px rgba(0,198,255,0.12), inset 0 0 12px rgba(0,198,255,0.04);
+      color: var(--blue);
+    }
+
+    /* Small trust bar below buttons */
+    .hero-trust {
+      margin-top: 40px;
+      padding-top: 32px;
+      border-top: 1px solid rgba(255,255,255,0.06);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 28px;
+      animation: fadeInUp 0.8s 1.35s ease forwards;
+      opacity: 0;
+      flex-wrap: wrap;
+    }
+
+    .trust-item {
+      display: flex;
+      align-items: center;
+      gap: 7px;
+      font-size: 0.75rem;
+      color: rgba(100,110,140,0.9);
+      font-weight: 500;
+      letter-spacing: 0.2px;
+    }
+
+    .trust-sep { color: rgba(255,255,255,0.08); font-size: 0.8rem; }
+
+    /* Scroll indicator */
+    .scroll-indicator {
+      position: absolute;
+      bottom: 28px;
+      left: 50%;
+      transform: translateX(-50%);
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 8px;
+      color: var(--muted);
+      font-size: 0.68rem;
+      letter-spacing: 2.5px;
+      text-transform: uppercase;
+      animation: fadeInUp 1s 1.6s ease forwards;
+      opacity: 0;
+    }
+
+    .scroll-line {
+      width: 1px; height: 48px;
+      background: linear-gradient(to bottom, var(--purple), transparent);
+      animation: grow-line 2.2s ease infinite;
+    }
+
+    @keyframes grow-line {
+      0%   { transform: scaleY(0); transform-origin: top; }
+      50%  { transform: scaleY(1); transform-origin: top; }
+      51%  { transform: scaleY(1); transform-origin: bottom; }
+      100% { transform: scaleY(0); transform-origin: bottom; }
+    }
+
+    /* ===== SECTION COMMON ===== */
+    section {
+      position: relative;
+      z-index: 1;
+    }
+
+    .section-label {
+      display: inline-block;
+      font-size: 0.68rem;
+      font-weight: 700;
+      letter-spacing: 3.5px;
+      text-transform: uppercase;
+      color: rgba(0,198,255,0.75);
+      margin-bottom: 14px;
+      position: relative;
+      padding-left: 28px;
+    }
+
+    .section-label::before {
+      content: '';
+      position: absolute;
+      left: 0; top: 50%;
+      transform: translateY(-50%);
+      width: 18px; height: 1.5px;
+      background: var(--grad1);
+      border-radius: 2px;
+    }
+
+    .section-title {
+      font-family: 'Outfit', sans-serif;
+      font-size: clamp(1.9rem, 3.8vw, 2.9rem);
+      font-weight: 800;
+      letter-spacing: -1px;
+      line-height: 1.12;
+      margin-bottom: 14px;
+    }
+
+    .section-sub {
+      color: var(--muted);
+      font-size: 0.95rem;
+      max-width: 460px;
+      line-height: 1.78;
+      font-weight: 400;
+    }
+
+    /* ===== FEATURES SECTION ===== */
+    #features {
+      padding: 128px 72px;
+      background: linear-gradient(180deg, transparent, rgba(11,7,30,0.6), transparent);
+    }
+
+    .features-inner {
+      max-width: 1160px;
+      margin: 0 auto;
+    }
+
+    .features-header {
+      text-align: center;
+      margin-bottom: 72px;
+    }
+
+    .features-header .section-label { padding-left: 0; }
+    .features-header .section-label::before { display: none; }
+
+    .features-header .section-sub {
+      max-width: 500px;
+      margin: 0 auto;
+    }
+
+    .features-grid {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 24px;
+    }
+
+    .feature-card {
+      position: relative;
+      padding: 44px 40px;
+      border-radius: 20px;
+      background: var(--glass);
+      border: 1px solid var(--glass-border);
+      backdrop-filter: blur(24px);
+      -webkit-backdrop-filter: blur(24px);
+      overflow: hidden;
+      transition: transform 0.4s cubic-bezier(0.22,1,0.36,1), border-color 0.4s ease, box-shadow 0.4s ease;
+      cursor: default;
+    }
+
+    .feature-card::before {
+      content: '';
+      position: absolute;
+      inset: 0;
+      border-radius: 24px;
+      background: var(--card-grad, var(--grad1));
+      opacity: 0;
+      transition: opacity 0.4s ease;
+      z-index: 0;
+    }
+
+    .feature-card:hover { transform: translateY(-10px); }
+    .feature-card:hover::before { opacity: 0.04; }
+    .feature-card:hover { border-color: rgba(0,198,255,0.25); box-shadow: 0 20px 60px rgba(0,0,0,0.3), 0 0 40px rgba(123,47,247,0.1); }
+
+    .card-1 { --card-grad: var(--grad1); }
+    .card-2 { --card-grad: var(--grad2); }
+    .card-3 { --card-grad: var(--grad3); }
+
+    .card-1:hover { border-color: rgba(0,198,255,0.3); box-shadow: 0 20px 60px rgba(0,0,0,0.3), 0 0 50px rgba(0,198,255,0.12); }
+    .card-2:hover { border-color: rgba(247,37,133,0.3); box-shadow: 0 20px 60px rgba(0,0,0,0.3), 0 0 50px rgba(247,37,133,0.12); }
+    .card-3:hover { border-color: rgba(0,245,212,0.3); box-shadow: 0 20px 60px rgba(0,0,0,0.3), 0 0 50px rgba(0,245,212,0.12); }
+
+    .feature-card > * { position: relative; z-index: 1; }
+
+    .card-icon-wrap {
+      width: 52px; height: 52px;
+      border-radius: 14px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      margin-bottom: 24px;
+      font-size: 1.4rem;
+    }
+
+    .card-1 .card-icon-wrap { background: linear-gradient(135deg, rgba(0,198,255,0.12), rgba(123,47,247,0.12)); box-shadow: 0 0 16px rgba(0,198,255,0.08); }
+    .card-2 .card-icon-wrap { background: linear-gradient(135deg, rgba(247,37,133,0.12), rgba(123,47,247,0.12)); box-shadow: 0 0 16px rgba(247,37,133,0.08); }
+    .card-3 .card-icon-wrap { background: linear-gradient(135deg, rgba(0,245,212,0.12), rgba(0,198,255,0.12)); box-shadow: 0 0 16px rgba(0,245,212,0.08); }
+
+    .card-number {
+      font-size: 0.68rem;
+      font-weight: 700;
+      letter-spacing: 2.5px;
+      text-transform: uppercase;
+      margin-bottom: 10px;
+      opacity: 0.7;
+    }
+
+    .card-1 .card-number { color: var(--blue); }
+    .card-2 .card-number { color: var(--pink); }
+    .card-3 .card-number { color: var(--cyan); }
+
+    .card-title {
+      font-family: 'Outfit', sans-serif;
+      font-size: 1.3rem;
+      font-weight: 700;
+      margin-bottom: 12px;
+      letter-spacing: -0.4px;
+      line-height: 1.25;
+    }
+
+    .card-desc {
+      color: var(--muted);
+      font-size: 0.875rem;
+      line-height: 1.75;
+    }
+
+    .card-link {
+      display: inline-flex;
+      align-items: center;
+      gap: 5px;
+      margin-top: 28px;
+      font-size: 0.82rem;
+      font-weight: 600;
+      text-decoration: none;
+      letter-spacing: 0.2px;
+      transition: gap 0.25s ease, opacity 0.25s ease;
+      opacity: 0.8;
+    }
+
+    .card-1 .card-link { color: var(--blue); }
+    .card-2 .card-link { color: var(--pink); }
+    .card-3 .card-link { color: var(--cyan); }
+    .card-link:hover { gap: 10px; opacity: 1; }
+
+    .card-shine {
+      position: absolute;
+      top: -50%; right: -50%;
+      width: 200%; height: 200%;
+      background: radial-gradient(circle at top right, rgba(255,255,255,0.025), transparent 60%);
+      pointer-events: none;
+    }
+
+    /* ===== STATS SECTION ===== */
+    #stats {
+      padding: 112px 72px;
+      position: relative;
+    }
+
+    .stats-bg {
+      position: absolute;
+      inset: 0;
+      background: linear-gradient(135deg, rgba(123,47,247,0.055), rgba(0,198,255,0.03));
+      border-top: 1px solid var(--glass-border);
+      border-bottom: 1px solid var(--glass-border);
+    }
+
+    .stats-inner {
+      max-width: 1080px;
+      margin: 0 auto;
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 88px;
+      align-items: center;
+      position: relative;
+      z-index: 1;
+    }
+
+    .stats-text .section-sub { margin-bottom: 36px; }
+
+    .stats-highlight {
+      display: inline-flex;
+      align-items: center;
+      gap: 10px;
+      padding: 10px 18px;
+      border-radius: 12px;
+      background: rgba(0,198,255,0.055);
+      border: 1px solid rgba(0,198,255,0.12);
+      font-size: 0.82rem;
+      color: rgba(0,198,255,0.8);
+      letter-spacing: 0.1px;
+    }
+
+    .stats-numbers {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 20px;
+    }
+
+    .stat-card {
+      padding: 28px 26px;
+      border-radius: 18px;
+      background: var(--glass);
+      border: 1px solid var(--glass-border);
+      backdrop-filter: blur(24px);
+      position: relative;
+      overflow: hidden;
+      transition: transform 0.35s cubic-bezier(0.22,1,0.36,1), box-shadow 0.35s ease;
+    }
+
+    .stat-card:hover { transform: translateY(-5px); box-shadow: 0 16px 36px rgba(0,0,0,0.22); }
+
+    .stat-card.wide { grid-column: 1 / -1; }
+
+    .stat-value {
+      font-family: 'Outfit', sans-serif;
+      font-size: 2.6rem;
+      font-weight: 900;
+      letter-spacing: -2px;
+      background: var(--grad1);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+      line-height: 1;
+      margin-bottom: 5px;
+    }
+
+    .stat-card:nth-child(2) .stat-value {
+      background: var(--grad2);
+      -webkit-background-clip: text;
+      background-clip: text;
+    }
+
+    .stat-card.wide .stat-value {
+      background: var(--grad3);
+      -webkit-background-clip: text;
+      background-clip: text;
+    }
+
+    .stat-label {
+      font-size: 0.8rem;
+      color: var(--muted);
+      font-weight: 500;
+      letter-spacing: 0.1px;
+    }
+
+    .stat-trend {
+      position: absolute;
+      top: 18px; right: 18px;
+      font-size: 0.68rem;
+      font-weight: 700;
+      color: var(--cyan);
+      background: rgba(0,245,212,0.08);
+      border: 1px solid rgba(0,245,212,0.16);
+      padding: 3px 9px;
+      border-radius: 50px;
+      letter-spacing: 0.3px;
+    }
+
+    .stat-bar {
+      margin-top: 14px;
+      height: 2px;
+      border-radius: 2px;
+      background: rgba(255,255,255,0.05);
+      overflow: hidden;
+    }
+
+    .stat-bar-fill {
+      height: 100%;
+      border-radius: 2px;
+      background: var(--grad1);
+      width: 0%;
+      transition: width 1.6s cubic-bezier(0.22,1,0.36,1);
+    }
+
+    .stat-card:nth-child(2) .stat-bar-fill { background: var(--grad2); }
+    .stat-card.wide .stat-bar-fill { background: var(--grad3); }
+
+    /* ===== NETWORK SECTION ===== */
+    #network {
+      padding: 128px 72px;
+    }
+
+    .network-inner {
+      max-width: 1080px;
+      margin: 0 auto;
+      text-align: center;
+    }
+
+    .network-grid {
+      margin-top: 64px;
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 18px;
+    }
+
+    .network-item {
+      padding: 32px 24px;
+      border-radius: 16px;
+      background: var(--glass);
+      border: 1px solid var(--glass-border);
+      backdrop-filter: blur(24px);
+      transition: all 0.4s cubic-bezier(0.22,1,0.36,1);
+      position: relative;
+      overflow: hidden;
+      text-align: left;
+    }
+
+    .network-item::before {
+      content: '';
+      position: absolute;
+      bottom: 0; left: 0; right: 0;
+      height: 1.5px;
+      background: var(--grad1);
+      transform: scaleX(0);
+      transition: transform 0.4s ease;
+    }
+
+    .network-item:hover { transform: translateY(-5px); border-color: rgba(123,47,247,0.25); box-shadow: 0 16px 36px rgba(0,0,0,0.18); }
+    .network-item:hover::before { transform: scaleX(1); }
+
+    .network-icon { font-size: 1.8rem; margin-bottom: 18px; display: block; }
+    .network-title {
+      font-family: 'Outfit', sans-serif;
+      font-size: 1rem;
+      font-weight: 700;
+      margin-bottom: 8px;
+      letter-spacing: -0.2px;
+    }
+
+    .network-desc { font-size: 0.8rem; color: var(--muted); line-height: 1.68; }
+
+    /* ===== FOOTER ===== */
+    footer {
+      position: relative;
+      z-index: 1;
+      padding: 80px 72px 40px;
+      border-top: 1px solid var(--glass-border);
+      background: linear-gradient(180deg, transparent, rgba(5,3,15,0.85));
+    }
+
+    .footer-inner {
+      max-width: 1200px;
+      margin: 0 auto;
+    }
+
+    .footer-top {
+      display: grid;
+      grid-template-columns: 1.4fr 1fr 1fr 1fr;
+      gap: 60px;
+      margin-bottom: 60px;
+    }
+
+    .footer-brand .nav-logo { font-size: 1.7rem; margin-bottom: 16px; display: block; }
+
+    .footer-brand-desc {
+      color: var(--muted);
+      font-size: 0.88rem;
+      line-height: 1.7;
+      margin-bottom: 24px;
+    }
+
+    .footer-socials {
+      display: flex;
+      gap: 12px;
+    }
+
+    .social-btn {
+      width: 38px; height: 38px;
+      border-radius: 10px;
+      background: var(--glass);
+      border: 1px solid var(--glass-border);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 1rem;
+      cursor: pointer;
+      transition: all 0.3s ease;
+      text-decoration: none;
+      color: var(--muted);
+    }
+
+    .social-btn:hover { background: rgba(123,47,247,0.15); border-color: rgba(123,47,247,0.4); color: var(--text); transform: translateY(-3px); }
+
+    .footer-col-title {
+      font-family: 'Outfit', sans-serif;
+      font-size: 1rem;
+      font-weight: 700;
+      margin-bottom: 20px;
+      color: var(--text);
+    }
+
+    .footer-links {
+      list-style: none;
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+    }
+
+    .footer-links a {
+      text-decoration: none;
+      color: var(--muted);
+      font-size: 0.88rem;
+      transition: color 0.3s ease, padding-left 0.3s ease;
+      display: block;
+    }
+
+    .footer-links a:hover { color: var(--text); padding-left: 4px; }
+
+    .footer-bottom {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding-top: 32px;
+      border-top: 1px solid var(--glass-border);
+      flex-wrap: wrap;
+      gap: 16px;
+    }
+
+    .footer-copy {
+      color: var(--muted);
+      font-size: 0.82rem;
+    }
+
+    .footer-bottom-links {
+      display: flex;
+      gap: 24px;
+    }
+
+    .footer-bottom-links a {
+      text-decoration: none;
+      color: var(--muted);
+      font-size: 0.82rem;
+      transition: color 0.3s;
+    }
+
+    .footer-bottom-links a:hover { color: var(--text); }
+
+    .footer-status {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      font-size: 0.78rem;
+      color: var(--cyan);
+    }
+
+    .status-dot {
+      width: 7px; height: 7px;
+      background: var(--cyan);
+      border-radius: 50%;
+      box-shadow: 0 0 8px var(--cyan);
+      animation: pulse-dot 2s ease infinite;
+    }
+
+    /* ===== ANIMATIONS ===== */
+    @keyframes fadeInDown {
+      from { opacity: 0; transform: translateY(-20px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+
+    @keyframes fadeInUp {
+      from { opacity: 0; transform: translateY(30px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+
+    .reveal {
+      opacity: 0;
+      transform: translateY(40px);
+      transition: opacity 0.8s ease, transform 0.8s ease;
+    }
+
+    .reveal.visible {
+      opacity: 1;
+      transform: translateY(0);
+    }
+
+    .reveal-delay-1 { transition-delay: 0.1s; }
+    .reveal-delay-2 { transition-delay: 0.2s; }
+    .reveal-delay-3 { transition-delay: 0.3s; }
+    .reveal-delay-4 { transition-delay: 0.4s; }
+
+    /* ===== RESPONSIVE ===== */
+    @media (max-width: 1024px) {
+      nav { padding: 18px 32px; }
+      #features, #stats, #network, footer { padding-left: 32px; padding-right: 32px; }
+      .features-grid { grid-template-columns: 1fr; }
+      .stats-inner { grid-template-columns: 1fr; gap: 50px; }
+      .network-grid { grid-template-columns: repeat(2, 1fr); }
+      .footer-top { grid-template-columns: 1fr 1fr; gap: 40px; }
+    }
+
+    @media (max-width: 640px) {
+      nav { padding: 16px 20px; }
+      .nav-links { display: none; }
+      #features, #stats, #network, footer { padding-left: 20px; padding-right: 20px; }
+      .network-grid { grid-template-columns: 1fr; }
+      .footer-top { grid-template-columns: 1fr; }
+      .stats-numbers { grid-template-columns: 1fr; }
+      .stat-card.wide { grid-column: auto; }
+    }
+  </style>
+</head>
+<body>
+
+<canvas id="bg-canvas"></canvas>
+
+<!-- ===== NAVBAR ===== -->
+<nav id="navbar">
+  <span class="nav-logo">⬡ NexusAI</span>
+  <ul class="nav-links">
+    <li><a href="#features">Features</a></li>
+    <li><a href="#stats">Stats</a></li>
+    <li><a href="#network">Network</a></li>
+    <li><a href="#footer-section">Docs</a></li>
+  </ul>
+  <a href="#hero" class="nav-cta">Launch App →</a>
+</nav>
+
+<!-- ===== HERO SECTION ===== -->
+<section id="hero">
+  <div class="hero-orb hero-orb-1"></div>
+  <div class="hero-orb hero-orb-2"></div>
+  <div class="hero-orb hero-orb-3"></div>
+
+  <!-- GLASSMORPHISM CARD -->
+  <div class="hero-glass-card">
+    <div class="hero-badge">
+      <span class="badge-dot"></span>
+      Now Live on Mainnet &mdash; V2 Launched
+    </div>
+
+    <h1 class="hero-title">
+      <span class="glow-word">Powering the</span><br />
+      <span class="gradient-text">Future of AI Data</span>
+    </h1>
+
+    <p class="hero-sub">
+      Decentralized network for secure and intelligent data systems.<br/>
+      Contribute, validate, and earn — all on-chain, all permissionless.
+    </p>
+
+    <div class="hero-cta-group">
+      <button class="btn-glow" id="get-started-btn" onclick="document.getElementById('features').scrollIntoView({behavior:'smooth'})">
+        ✦ &nbsp;Get Started
+      </button>
+    </div>
+
+    <div class="hero-trust">
+      <span class="trust-item">🔐 Zero-Knowledge Proofs</span>
+      <span class="trust-sep">|</span>
+      <span class="trust-item">⚡ 128K+ Active Users</span>
+      <span class="trust-sep">|</span>
+      <span class="trust-item">🌐 47K+ Network Nodes</span>
+    </div>
+  </div>
+
+  <div class="scroll-indicator">
+    <span>Scroll</span>
+    <div class="scroll-line"></div>
+  </div>
+</section>
+
+<!-- ===== FEATURES SECTION ===== -->
+<section id="features">
+  <div class="features-inner">
+    <div class="features-header reveal">
+      <div class="section-label">Why NexusAI</div>
+      <h2 class="section-title">Built for the <span class="gradient-text">Next Generation</span></h2>
+      <p class="section-sub">Three pillars powering the most advanced decentralized AI data ecosystem on the planet.</p>
+    </div>
+
+    <div class="features-grid">
+      <!-- Card 1 -->
+      <div class="feature-card card-1 reveal reveal-delay-1">
+        <div class="card-shine"></div>
+        <div class="card-icon-wrap">🧠</div>
+        <div class="card-number">01 — Core</div>
+        <h3 class="card-title">AI Data Layer</h3>
+        <p class="card-desc">Contribute high-quality labeled datasets to train next-gen AI models. Our protocol ensures data integrity, provenance, and fair compensation through smart contracts.</p>
+        <a href="#" class="card-link">Explore Protocol <span>→</span></a>
+      </div>
+
+      <!-- Card 2 -->
+      <div class="feature-card card-2 reveal reveal-delay-2">
+        <div class="card-shine"></div>
+        <div class="card-icon-wrap">🔐</div>
+        <div class="card-number">02 — Security</div>
+        <h3 class="card-title">Secure Network</h3>
+        <p class="card-desc">Military-grade encryption with zero-knowledge proofs protects every node. Decentralized consensus means no single point of failure — ever.</p>
+        <a href="#" class="card-link">View Security <span>→</span></a>
+      </div>
+
+      <!-- Card 3 -->
+      <div class="feature-card card-3 reveal reveal-delay-3">
+        <div class="card-shine"></div>
+        <div class="card-icon-wrap">💎</div>
+        <div class="card-number">03 — Rewards</div>
+        <h3 class="card-title">Earn Rewards</h3>
+        <p class="card-desc">Real-time yield from data validation, network participation, and liquidity provision. Stake $NXS to multiply your earnings exponentially.</p>
+        <a href="#" class="card-link">Start Earning <span>→</span></a>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ===== STATS SECTION ===== -->
+<section id="stats">
+  <div class="stats-bg"></div>
+  <div class="stats-inner">
+    <div class="stats-text reveal">
+      <div class="section-label">By the Numbers</div>
+      <h2 class="section-title">Trusted by <span class="gradient-text">thousands</span> worldwide</h2>
+      <p class="section-sub">Growing every second. NexusAI is the fastest-growing decentralized AI data network on Web3.</p>
+      <br/>
+      <div class="stats-highlight">
+        <span>⚡</span>
+        <span>+2,400 new nodes joined this week alone</span>
+      </div>
+    </div>
+
+    <div class="stats-numbers reveal reveal-delay-2">
+      <div class="stat-card">
+        <div class="stat-trend">↑ 34%</div>
+        <div class="stat-value" data-target="128400" data-suffix="K+">0</div>
+        <div class="stat-label">Active Users</div>
+        <div class="stat-bar"><div class="stat-bar-fill" data-width="78"></div></div>
+      </div>
+
+      <div class="stat-card">
+        <div class="stat-trend">↑ 91%</div>
+        <div class="stat-value" data-target="47200" data-suffix="K+">0</div>
+        <div class="stat-label">Network Nodes</div>
+        <div class="stat-bar"><div class="stat-bar-fill" data-width="62"></div></div>
+      </div>
+
+      <div class="stat-card wide">
+        <div class="stat-trend">↑ 220%</div>
+        <div class="stat-value" data-target="8900000" data-prefix="$" data-suffix="M+">0</div>
+        <div class="stat-label">Total Rewards Distributed</div>
+        <div class="stat-bar"><div class="stat-bar-fill" data-width="91"></div></div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ===== NETWORK SECTION ===== -->
+<section id="network">
+  <div class="network-inner">
+    <div class="reveal">
+      <div class="section-label" style="padding-left:0; display:block; text-align:center;">
+        <span style="padding-left:0">The Ecosystem</span>
+      </div>
+      <h2 class="section-title">Everything you need to <span class="gradient-text">build and earn</span></h2>
+      <p class="section-sub" style="margin:0 auto">A complete suite of tools for developers, data scientists, and crypto-native users.</p>
+    </div>
+
+    <div class="network-grid">
+      <div class="network-item reveal reveal-delay-1">
+        <span class="network-icon">⚙️</span>
+        <div class="network-title">Node Runner</div>
+        <p class="network-desc">Deploy and manage validator nodes with our one-click dashboard. No DevOps required.</p>
+      </div>
+      <div class="network-item reveal reveal-delay-2">
+        <span class="network-icon">📊</span>
+        <div class="network-title">Data Marketplace</div>
+        <p class="network-desc">Buy, sell, and license AI training datasets in a trustless, on-chain marketplace.</p>
+      </div>
+      <div class="network-item reveal reveal-delay-3">
+        <span class="network-icon">🪙</span>
+        <div class="network-title">$NXS Token</div>
+        <p class="network-desc">Stake, govern, and earn. The $NXS token is the lifeblood of the NexusAI ecosystem.</p>
+      </div>
+      <div class="network-item reveal reveal-delay-4">
+        <span class="network-icon">🌐</span>
+        <div class="network-title">Developer API</div>
+        <p class="network-desc">Integrate AI data feeds into your dApps with our low-latency REST and WebSocket APIs.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ===== FOOTER ===== -->
+<footer id="footer-section">
+  <div class="footer-inner">
+    <div class="footer-top">
+      <div class="footer-brand">
+        <span class="nav-logo">⬡ NexusAI</span>
+        <p class="footer-brand-desc">The decentralized AI data infrastructure powering the next generation of machine intelligence. Open, permissionless, and community-owned.</p>
+        <div class="footer-socials">
+          <a href="#" class="social-btn" title="Twitter/X">𝕏</a>
+          <a href="#" class="social-btn" title="Discord">💬</a>
+          <a href="#" class="social-btn" title="GitHub">🐙</a>
+          <a href="#" class="social-btn" title="Telegram">✈</a>
+        </div>
+      </div>
+
+      <div>
+        <div class="footer-col-title">Protocol</div>
+        <ul class="footer-links">
+          <li><a href="#">Documentation</a></li>
+          <li><a href="#">Whitepaper</a></li>
+          <li><a href="#">Smart Contracts</a></li>
+          <li><a href="#">Audits</a></li>
+          <li><a href="#">Roadmap</a></li>
+        </ul>
+      </div>
+
+      <div>
+        <div class="footer-col-title">Community</div>
+        <ul class="footer-links">
+          <li><a href="#">Governance</a></li>
+          <li><a href="#">Forum</a></li>
+          <li><a href="#">Bug Bounty</a></li>
+          <li><a href="#">Grants</a></li>
+          <li><a href="#">Ambassador</a></li>
+        </ul>
+      </div>
+
+      <div>
+        <div class="footer-col-title">Company</div>
+        <ul class="footer-links">
+          <li><a href="#">About</a></li>
+          <li><a href="#">Blog</a></li>
+          <li><a href="#">Careers</a></li>
+          <li><a href="#">Media Kit</a></li>
+          <li><a href="#">Contact</a></li>
+        </ul>
+      </div>
+    </div>
+
+    <div class="footer-bottom">
+      <div class="footer-copy">© 2025 NexusAI Protocol. All rights reserved.</div>
+      <div class="footer-status">
+        <div class="status-dot"></div>
+        All systems operational
+      </div>
+      <div class="footer-bottom-links">
+        <a href="#">Privacy</a>
+        <a href="#">Terms</a>
+        <a href="#">Cookies</a>
+      </div>
+    </div>
+  </div>
+</footer>
+
+<!-- ===== SCRIPTS ===== -->
+<script>
+/* ========= PARTICLE / GRID CANVAS ========= */
+const canvas = document.getElementById('bg-canvas');
+const ctx = canvas.getContext('2d');
+
+let W = canvas.width = window.innerWidth;
+let H = canvas.height = window.innerHeight;
+
+window.addEventListener('resize', () => {
+  W = canvas.width = window.innerWidth;
+  H = canvas.height = window.innerHeight;
+  initParticles();
+});
+
+const PARTICLE_COUNT = 90;
+let particles = [];
+let mouse = { x: W / 2, y: H / 2 };
+
+document.addEventListener('mousemove', e => {
+  mouse.x = e.clientX;
+  mouse.y = e.clientY;
+});
+
+class Particle {
+  constructor() { this.reset(true); }
+  reset(init) {
+    this.x = Math.random() * W;
+    this.y = init ? Math.random() * H : H + 10;
+    this.size = Math.random() * 1.5 + 0.3;
+    this.speedX = (Math.random() - 0.5) * 0.3;
+    this.speedY = -(Math.random() * 0.4 + 0.1);
+    this.opacity = Math.random() * 0.5 + 0.1;
+    this.hue = Math.random() > 0.5 ? 200 : 270; /* blue or purple */
+    this.color = `hsla(${this.hue},${Math.random() > 0.5 ? 100 : 80}%,${Math.random() > 0.5 ? 65 : 75}%,${this.opacity})`;
+  }
+  update() {
+    this.x += this.speedX;
+    this.y += this.speedY;
+    if (this.y < -10) this.reset(false);
+  }
+  draw() {
+    ctx.beginPath();
+    ctx.arc(this.x, this.y, this.size, 0, Math.PI * 2);
+    ctx.fillStyle = this.color;
+    ctx.fill();
+  }
+}
+
+function initParticles() {
+  particles = Array.from({ length: PARTICLE_COUNT }, () => new Particle());
+}
+
+// Draw connecting lines between close particles
+function drawLines() {
+  for (let i = 0; i < particles.length; i++) {
+    for (let j = i + 1; j < particles.length; j++) {
+      const dx = particles[i].x - particles[j].x;
+      const dy = particles[i].y - particles[j].y;
+      const dist = Math.sqrt(dx * dx + dy * dy);
+      if (dist < 120) {
+        ctx.beginPath();
+        ctx.strokeStyle = `rgba(123,47,247,${0.08 * (1 - dist / 120)})`;
+        ctx.lineWidth = 0.5;
+        ctx.moveTo(particles[i].x, particles[i].y);
+        ctx.lineTo(particles[j].x, particles[j].y);
+        ctx.stroke();
+      }
+    }
+  }
+}
+
+function animate() {
+  ctx.clearRect(0, 0, W, H);
+  particles.forEach(p => { p.update(); p.draw(); });
+  drawLines();
+  requestAnimationFrame(animate);
+}
+
+initParticles();
+animate();
+
+/* ========= SCROLL REVEAL ========= */
+const reveals = document.querySelectorAll('.reveal');
+const revealObserver = new IntersectionObserver((entries) => {
+  entries.forEach(e => {
+    if (e.isIntersecting) {
+      e.target.classList.add('visible');
+    }
+  });
+}, { threshold: 0.12 });
+
+reveals.forEach(el => revealObserver.observe(el));
+
+/* ========= COUNTER ANIMATION ========= */
+function formatNumber(n) {
+  if (n >= 1000000) return '$' + (n / 1000000).toFixed(1) + 'M+';
+  if (n >= 1000) return (n / 1000).toFixed(0) + 'K+';
+  return n.toLocaleString();
+}
+
+const statValues = document.querySelectorAll('.stat-value');
+let countersStarted = false;
+
+const statsSection = document.getElementById('stats');
+const statsObserver = new IntersectionObserver((entries) => {
+  if (entries[0].isIntersecting && !countersStarted) {
+    countersStarted = true;
+
+    statValues.forEach(el => {
+      const target = +el.getAttribute('data-target');
+      const prefix = el.getAttribute('data-prefix') || '';
+      const suffix = el.getAttribute('data-suffix') || '';
+      const duration = 2000;
+      const start = performance.now();
+
+      function update(now) {
+        const progress = Math.min((now - start) / duration, 1);
+        const eased = 1 - Math.pow(1 - progress, 3);
+        const current = Math.floor(eased * target);
+        if (target >= 1000000) {
+          el.textContent = prefix + (current / 1000000).toFixed(1) + 'M+';
+        } else if (target >= 1000) {
+          el.textContent = prefix + (current / 1000).toFixed(0) + 'K+';
+        } else {
+          el.textContent = prefix + current.toLocaleString() + suffix;
+        }
+        if (progress < 1) requestAnimationFrame(update);
+      }
+      requestAnimationFrame(update);
+    });
+
+    // Animate stat bars
+    document.querySelectorAll('.stat-bar-fill').forEach(bar => {
+      const w = bar.getAttribute('data-width');
+      setTimeout(() => { bar.style.width = w + '%'; }, 200);
+    });
+  }
+}, { threshold: 0.4 });
+
+statsObserver.observe(statsSection);
+
+/* ========= NAVBAR SCROLL EFFECT ========= */
+const navbar = document.getElementById('navbar');
+window.addEventListener('scroll', () => {
+  if (window.scrollY > 60) {
+    navbar.style.padding = '14px 60px';
+  } else {
+    navbar.style.padding = '20px 60px';
+  }
+});
+
+/* ========= BUTTON RIPPLE EFFECT ========= */
+document.querySelectorAll('.btn-glow').forEach(btn => {
+  btn.addEventListener('click', function(e) {
+    const ripple = document.createElement('span');
+    const rect = btn.getBoundingClientRect();
+    const size = Math.max(rect.width, rect.height);
+    ripple.style.cssText = `
+      position: absolute;
+      border-radius: 50%;
+      background: rgba(255,255,255,0.25);
+      width: ${size}px;
+      height: ${size}px;
+      left: ${e.clientX - rect.left - size/2}px;
+      top: ${e.clientY - rect.top - size/2}px;
+      transform: scale(0);
+      animation: ripple-anim 0.6s linear;
+      pointer-events: none;
+    `;
+    const style = document.createElement('style');
+    style.innerHTML = `@keyframes ripple-anim { to { transform: scale(2.5); opacity: 0; } }`;
+    document.head.appendChild(style);
+    btn.appendChild(ripple);
+    setTimeout(() => ripple.remove(), 700);
+  });
+});
+</script>
+</body>
+</html>

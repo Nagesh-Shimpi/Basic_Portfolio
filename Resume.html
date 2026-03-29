@@ -1,0 +1,232 @@
+```html
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Nagesh | Portfolio</title>
+
+<link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;500;700&display=swap" rel="stylesheet">
+
+<style>
+:root {
+    --bg: #0f172a;
+    --text: #e2e8f0;
+    --card: rgba(30, 41, 59, 0.7);
+    --accent: #38bdf8;
+}
+
+.light-mode {
+    --bg: #f1f5f9;
+    --text: #0f172a;
+    --card: rgba(255,255,255,0.7);
+}
+
+* {
+    margin:0;
+    padding:0;
+    box-sizing:border-box;
+    font-family: 'Poppins', sans-serif;
+}
+
+body {
+    background: var(--bg);
+    color: var(--text);
+    transition: 0.3s;
+}
+
+header {
+    text-align:center;
+    padding:50px 20px;
+}
+
+header h1 {
+    font-size:3rem;
+    color: var(--accent);
+}
+
+.toggle-btn {
+    position: fixed;
+    top:20px;
+    right:20px;
+    padding:10px 15px;
+    border:none;
+    background: var(--accent);
+    color:#000;
+    cursor:pointer;
+    border-radius:20px;
+}
+
+.container {
+    max-width:1100px;
+    margin:auto;
+    padding:20px;
+}
+
+section {
+    margin:50px 0;
+    opacity:0;
+    transform: translateY(40px);
+    transition:1s;
+}
+
+section.show {
+    opacity:1;
+    transform: translateY(0);
+}
+
+h2 {
+    margin-bottom:15px;
+    color: var(--accent);
+}
+
+.card {
+    background: var(--card);
+    backdrop-filter: blur(10px);
+    padding:20px;
+    border-radius:15px;
+    margin-bottom:15px;
+    transition:0.3s;
+}
+
+.card:hover {
+    transform: scale(1.03);
+}
+
+.skills span {
+    display:inline-block;
+    padding:8px 12px;
+    margin:5px;
+    background:#334155;
+    border-radius:20px;
+}
+
+.project img {
+    width:100%;
+    border-radius:10px;
+    margin-bottom:10px;
+}
+
+a {
+    color: var(--accent);
+    text-decoration:none;
+}
+
+footer {
+    text-align:center;
+    padding:20px;
+}
+</style>
+</head>
+
+<body>
+
+<button class="toggle-btn" onclick="toggleMode()">🌙</button>
+
+<header>
+    <h1>Nagesh</h1>
+    <p>Aspiring Developer | Java | DSA</p>
+</header>
+
+<div class="container">
+
+<section>
+<h2>About</h2>
+<div class="card">
+<p>I am a passionate B.Tech student focused on building strong problem-solving skills and developing real-world applications using Java and SQL.</p>
+</div>
+</section>
+
+<section>
+<h2>Education</h2>
+<div class="card">
+<p><b>B.Tech CSE</b> (2022–2026)</p>
+<p>CGPA: 7.5</p>
+</div>
+</section>
+
+<section>
+<h2>Skills</h2>
+<div class="card skills">
+<span>Java</span><span>SQL</span><span>MySQL</span><span>DSA</span>
+<span>Arrays</span><span>Two Pointers</span><span>OOP</span>
+</div>
+</section>
+
+<section>
+<h2>Projects</h2>
+
+<div class="card project">
+<img src="https://source.unsplash.com/600x300/?coding" />
+<h3>Student Management System</h3>
+<p>Manage student records using Java & ArrayList.</p>
+<a href="#">GitHub Link</a>
+</div>
+
+<div class="card project">
+<img src="https://source.unsplash.com/600x300/?banking" />
+<h3>Banking App</h3>
+<p>Encapsulation-based banking system with transactions.</p>
+<a href="#">GitHub Link</a>
+</div>
+
+<div class="card project">
+<img src="https://source.unsplash.com/600x300/?database" />
+<h3>SQL Project</h3>
+<p>Practiced joins, queries, and database design.</p>
+<a href="#">GitHub Link</a>
+</div>
+
+</section>
+
+<section>
+<h2>Certifications</h2>
+<div class="card">
+<p>✔ Java (Udemy)</p>
+<p>✔ SQL Fundamentals</p>
+</div>
+</section>
+
+<section>
+<h2>Achievements</h2>
+<div class="card">
+<p>• Active DSA problem solver</p>
+<p>• Focused on Two Pointer & Arrays</p>
+</div>
+</section>
+
+<section>
+<h2>Contact</h2>
+<div class="card">
+<p>Email: nagesh@email.com</p>
+<p>GitHub: github.com/nagesh</p>
+</div>
+</section>
+
+</div>
+
+<footer>
+<p>© 2026 Nagesh</p>
+</footer>
+
+<script>
+// Dark mode
+function toggleMode(){
+    document.body.classList.toggle("light-mode");
+}
+
+// Scroll animation
+const sections = document.querySelectorAll("section");
+window.addEventListener("scroll", () => {
+    sections.forEach(sec => {
+        const top = sec.getBoundingClientRect().top;
+        if(top < window.innerHeight - 100){
+            sec.classList.add("show");
+        }
+    });
+});
+</script>
+
+</body>
+</html>
+```
